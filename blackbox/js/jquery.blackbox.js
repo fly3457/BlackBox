@@ -3,7 +3,6 @@
 	var W = $(window),
 			D = $(document);
 
-	
 	BlackBox = function(setting){
 		//默认设置
 		var Default = {
