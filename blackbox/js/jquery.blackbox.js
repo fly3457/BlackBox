@@ -31,22 +31,29 @@
 		var _close = this._close;
 		this._createButton(_onConfirm=function(){
 			_close();
-			if(callback)callback();
+			try{callback['onConfirm']();}
+			catch(e){
+				if (typeof(callback)=="function")callback();
+			}
 		})
 		return true;
 	}
 	
-	BlackBox.prototype.confirm = function(text,onConfirm,onCancel){
+	BlackBox.prototype.confirm = function(text,callback){
 		this._createGap();
 		var html = "<div class = system><p>"+text+"</p></div>"
 		this._createBox(html);
 		var _close = this._close;
 		this._createButton(_onConfirm=function(){
 			_close();
-			if(onConfirm)onConfirm();
+			try{callback['onConfirm']();}
+			catch(e){
+				if (typeof(callback)=="function")callback();
+			}
 		},_onCancel = function(){
 			_close();
-			if(onCancel)onCancel();
+			try{callback['onCancel']();}
+			catch(e){};
 		}
 		)
 		return true;

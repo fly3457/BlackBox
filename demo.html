@@ -20,8 +20,10 @@
 		box.alert("啊啊啊。戳到我了。。")
 	})
 	$("#confirm").click(function(){
-		box.confirm("你敢不敢确认啊",onConfirm=function(){
+		box.confirm("你敢不敢确认啊",{
+			onCancel:function(){
 			box.alert("亲，你点击了确认。")
+			}
 		})
 	})
 	})
