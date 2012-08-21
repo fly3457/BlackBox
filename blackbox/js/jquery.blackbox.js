@@ -59,6 +59,12 @@
 	
   	BlackBox.prototype.prompt = function(text,settings,callback){
   		settings  = settings ? settings : {};
+  		if(settings['onConfirm']!=undefined||settings['onCancel']!=undefined){
+      		callback = settings;
+      		settings = {};
+  		}else{
+      		if(settings['default']==undefined)settings={'default':settings};
+  		}
 		this._createGap();
 		var html = "<div class = system><p>"+text+"</p><p><input id=BlackBoxinput  /></p></div>"
 		this._createBox(html);

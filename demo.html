@@ -29,7 +29,7 @@
 		})
 	})
   $("#prompt").click(function(){
-		var text = box.prompt("你输入什么我输出什么，信不信由你，反正我是信了。",{},{"onConfirm":function(date){
+		var text = box.prompt("你输入什么我输出什么，信不信由你，反正我是信了。","这使用了一个简写参数",{"onConfirm":function(date){
 			box.alert(date)
 		}})
 	})
