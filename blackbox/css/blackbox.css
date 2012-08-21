@@ -48,6 +48,18 @@
 	border: 1px solid #727171;
 }
 
+#BlackBoxinput {
+	-webkit-border-radius: 2px;  
+	-moz-border-radius: 2px;
+	border-radius:2px;
+	border: 1px solid #8f8f8f;
+    height: 14px;
+    line-height: 14px;
+    font-size: 14px;
+    width: 380px;
+    padding: 7px 6px;
+}
+
 #BlackBoxload {
 	position: absolute;
 	text-indent: -9999px;
@@ -88,4 +100,20 @@
 
 .Inner #actions .cancel{
 	color: #898989;
+}
+
+.Inner .close {
+	position: absolute;
+	right: 0;
+	bottom:-50px;
+	cursor: pointer;
+	background: url("../images/close.png") no-repeat;
+	float: left;
+	text-indent: -9999px;
+	width: 27px;
+	height: 27px;
+}
+
+#BlackBoxIframe {
+	background: #f9f9f9;
 }

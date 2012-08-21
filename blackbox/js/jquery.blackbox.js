@@ -15,10 +15,9 @@
 				if(_key in Default)this.settings[_key] = setting[_key]
 			}
 		}
-		//打开盒子
-		this.open = $.noop
 		//关闭盒子
 		this.close = function(){
+			this._close()
 		}
 		is_box_open = false;
 	}
@@ -34,7 +33,7 @@
 			catch(e){
 				if (typeof(callback)=="function")callback();
 			}
-		})
+		},false,false)
 		return true;
 	}
 	
@@ -53,9 +52,81 @@
 			_close();
 			try{callback['onCancel']();}
 			catch(e){};
+		},false
+		)
+		return true;
+	}
+	
+  	BlackBox.prototype.prompt = function(text,settings,callback){
+  		settings  = settings ? settings : {};
+		this._createGap();
+		var html = "<div class = system><p>"+text+"</p><p><input id=BlackBoxinput  /></p></div>"
+		this._createBox(html);
+		var $this  = $("input#BlackBoxinput");
+		if(settings['default'])$this.attr("placeholder",settings['default'])
+    	$this.focus();
+		var _close = this._close;
+		this._createButton(_onConfirm=function(){
+			var inputText = $this.val();
+		  	if(!inputText&&!settings['allownone']){
+  		  		$("#BlackBoxContent").BlackBoxShake()
+		  	}else{
+				_close();
+				try{callback['onConfirm'](inputText);}
+				catch(e){
+					if (typeof(callback)=="function")callback(inputText);
+			  }
+		  }
+		},_onCancel = function(){
+			_close();
+			try{callback['onCancel']();}
+			catch(e){};
 		}
 		)
 		return true;
+	}
+	
+	BlackBox.prototype.iframe = function(url,settings,callback){
+		this.load();
+		settings  = settings ? settings : {};
+		function _init_(){
+			var W_width = W.width(),
+					W_height = W.height();
+			width = settings['width'] ? Math.min(user_width,(W_width-200)) :  W_width-200;
+			height = settings['height'] ? Math.min(user_height,(W_height-150)) : W_height-150;
+			$this = $("#BlackBoxIframe");
+			$this.attr({
+						'width':width,
+						'height':height
+					});
+			return [width,height]
+		}
+		_result = _init_()
+		var html = '<iframe id="BlackBoxIframe"  frameborder="0" hspace="0" width=' + _result[0] + ' height=' +_result[1] +' src='+url+ ($.browser.msie ? ' allowtransparency="true"' : '') + '></iframe>'
+		this._createBox(html);
+		$this = $("#BlackBoxIframe");
+		if(!settings['scrolling'])$this.attr("scrolling","no")
+		var __createButton = this._createButton
+		function _setButton(){
+				__createButton(false,false,_onClose=function(){
+				_close();
+				try{callback['onClose']();}
+				catch(e){
+					if (typeof(callback)=="function")callback();
+				}
+			})}
+		if(settings['forceload']){
+			$this.hide();
+			$this.load(function(){
+				$("#BlackBoxload").remove();
+				$this.show();
+				_setButton();
+			})
+		}else{_setButton();}
+		$(window).resize(function(){
+			_init_();
+		})
+		var _close = this._close;
 	}
 	
 	BlackBox.prototype.load= function(){
@@ -102,7 +173,10 @@
 			}
 		}
 		if(_onClose){
-			//预留给关闭按钮
+			$(".Inner").prepend("<div class = close>关闭</div>")
+			$(".Inner > .close").click(function(){
+				_onClose();
+			})
 		}
 	}
 	

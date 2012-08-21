@@ -4,10 +4,11 @@
 	<title>BlackBox</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 
-	<!-- Add jQuery library -->
 	<script type="text/javascript" src="blackbox/js/jquery-1.7.2.min.js"></script>
 	<script type="text/javascript" src="blackbox/js/jquery.blackbox.js"></script>
+	
 	<link rel="stylesheet" type="text/css" href="blackbox/css/blackbox.css" media="screen" />
+	<link rel="stylesheet" type="text/css" href="style.css" media="screen" />
 	
 	<script>
 	$(document).ready(function() {
@@ -16,7 +17,7 @@
 		box.load();
 		setTimeout(function(){
 			box.ready();
-	},1000)
+	},500)
 	$("#alert").click(function(){
 		box.alert("啊啊啊。戳到我了。。")
 	})
@@ -27,15 +28,26 @@
 			}
 		})
 	})
+  $("#prompt").click(function(){
+		var text = box.prompt("你输入什么我输出什么，信不信由你，反正我是信了。",{},{"onConfirm":function(date){
+			box.alert(date)
+		}})
 	})
+	$("#baidu").click(function(){
+		box.iframe("http://www.baidu.com",{"forceload":1,'scrolling':1});
+	})
+	})
+
 
 	</script>
 </head>
 
 <body>
 	<div style="height: 2000px;">
-		<input type="button" id="alert" value="弹窗" />
+		<input type="button" id="alert" value="弹窗"  />
 		<input type="button" id="confirm" value="确认" />
+		<input type="button" id="prompt" value="输入" />
+		<input type="button" id="baidu" value="开百度" />
 	</div>
 </body>
 
