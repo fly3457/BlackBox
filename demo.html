@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>BlackBox</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+	<!-- Add jQuery library -->
+	<script type="text/javascript" src="uibox/js/jquery-1.7.2.min.js"></script>
+	<script type="text/javascript" src="uibox/js/jquery.blackbox.js"></script>
+	<link rel="stylesheet" type="text/css" href="uibox/css/blackbox.css" media="screen" />
+	
+	<script>
+	$(document).ready(function() {
+		var box = new $.BlackBox({});
+		box.load();
+		setTimeout(function(){
+			box.ready();
+	},1000)
+	$("#alert").click(function(){
+		box.alert("啊啊啊。戳到我了。。")
+	})
+	$("#confirm").click(function(){
+		box.confirm("你敢不敢确认啊",onConfirm=function(){
+			box.alert("亲，你点击了确认。")
+		})
+	})
+	})
+
+	</script>
+</head>
+
+<body>
+	<div style="height: 2000px;">
+		<input type="button" id="alert" value="弹窗" />
+		<input type="button" id="confirm" value="确认" />
+	</div>
+</body>
+
+</html>
