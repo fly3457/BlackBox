@@ -30,8 +30,8 @@
 		this._createBox(html);
 		var _close = this._close;
 		this._createButton(_onConfirm=function(){
-			if(callback)callback();
 			_close();
+			if(callback)callback();
 		})
 		return true;
 	}
@@ -42,11 +42,11 @@
 		this._createBox(html);
 		var _close = this._close;
 		this._createButton(_onConfirm=function(){
+			_close();
 			if(onConfirm)onConfirm();
-			_close();
 		},_onCancel = function(){
-			if(onCancel)onCancel();
 			_close();
+			if(onCancel)onCancel();
 		}
 		)
 		return true;
@@ -157,8 +157,6 @@
 		})
 	};
 	
-	
-	//由于此处出现BUG，需要修改！！
 	BlackBox.prototype._close = function(){
 		if(is_box_open)$("#BlackBox").remove();
 		is_box_open = false;
