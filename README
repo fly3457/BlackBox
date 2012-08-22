@@ -1,1 +1,10 @@
 一款开源的JQUERY插件，包含ALERT、CONFIRM、PROMPT、IFRAME、INLINE 等效果，开发中。
+
+即将完成的内容：
+  统一调用参数的方法，自动识别参数类型并匹配（getSetting和getCallback方法）
+  增加全局默认设置
+  添加修改背景的方法
+  功能全部完成后一次大的代码重构
+  二次封装，默认隐藏不常用的参数，将方法直接绑定在JQUERY上
+
+完成之后就将推出V1.0
