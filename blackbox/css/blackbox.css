@@ -66,6 +66,7 @@
 	background: url("../images/load.gif") no-repeat;
 	width: 58px;
 	height: 10px;
+	z-index: 9999;
 }
 
 .system {
@@ -86,7 +87,11 @@
 	float: right;
 	margin-right:14px;
 	cursor: pointer;
+	line-height:20px;
 	padding:5px 8px;
+	-webkit-border-radius: 2px;  
+	-moz-border-radius: 2px;
+	border-radius:2px;
 }
 
 .Inner #actions .confirm{
@@ -102,10 +107,10 @@
 	color: #898989;
 }
 
-.Inner .close {
+.Outer .close {
 	position: absolute;
 	right: 0;
-	bottom:-50px;
+	bottom:-40px;
 	cursor: pointer;
 	background: url("../images/close.png") no-repeat;
 	float: left;
@@ -116,4 +121,15 @@
 
 #BlackBoxIframe {
 	background: #f9f9f9;
+}
+
+#BlackBoxAttachmentContainer {
+	overflow: hidden;
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+
+#BlackBoxAttachmentContainer img{
+	z-index: -1;
 }
