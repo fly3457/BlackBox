@@ -10,6 +10,11 @@
  * 
  */
 
+
+
+//需要在执行前检测是否存储placeHodler，存在的话将其复位后继续运行，需写在_init_方法中。
+
+
 (function (window, document, $, undefined){
 	var W = $(window),
 			D = $(document);
@@ -98,24 +103,22 @@
 	
 	//inline方法
 	BlackBox.prototype.inline = function(target,settings,callback){
-		var $target = target,
+		var $target = $(target),
 		 		width = this.getConfig('width',false,[settings,callback])*1 || $target.width(),
 				height = this.getConfig('height',false,[settings,callback])*1 || $target.height(),
 				_allow_box_scrolling =  this.getConfig('allowBoxScrolling',false,[settings,callback]),
 				_on_close = this.getCallBack("onClose",true,[settings,callback]),
 				_display_close = this.getConfig("displayClose",false,[settings,callback]),
 				__createButton = this.createButton,
-				_close = this.closeBox,
-				html = $target.html();
-		$target.empty().wrap("<div id = 'BlackBoxPlaceHolder'></div>")
+				_close = this.closeBox;
 		this.createGap();
-		this.createBox("<div id ='BlackBoxIframe'>"+html+"</div>",width,height);
-		$this = $("#BlackBoxIframe");
-		if(!_allow_box_scrolling)$this.css("overflow","hidden");
+		this.createBox("<div id ='BlackBoxIframe'></div>",width,height);
+		$target.wrap("<div id = 'BlackBoxPlaceHolder'></div>").appendTo($("#BlackBoxIframe")).show();
+		if(!_allow_box_scrolling)$("#BlackBoxIframe").css("overflow","hidden");
 		if(_display_close){
 			this.createButton(false,false,_onClose=function(){
+				$(target).hide().appendTo($("#BlackBoxPlaceHolder")).unwrap();
 				_close();
-				$target.unwrap().html(html)
 				_on_close();
 			})}
 		return true;
@@ -152,9 +155,9 @@
 		if(!_allow_box_scrolling)$this.attr("scrolling","no");
 		function _setButton(){
 		if(_display_close){
-				__createButton(false,false,_onClose=function(){
-				_close();
-				_on_close();
+			__createButton(false,false,_onClose=function(){
+			_close();
+			_on_close();
 		})}}
 		if(_force_load){
 			_load();
@@ -200,15 +203,19 @@
 	
 	//载入完毕，设置参数为true的话将删除整个内容
 	BlackBox.prototype.ready= function(remove_all){
+		$("#BlackBoxIframe").hide().appendTo($("#BlackBoxPlaceHolder")).unwrap();	
+		$("#BlackBoxIframe").children().unwrap().hide();
 		if (remove_all)this.closeBox();
 		else $("#BlackBoxload").remove();
 	}
 	
 	//关闭整体
 	BlackBox.prototype.closeBox = function(){
+		$("#BlackBoxIframe").hide().appendTo($("#BlackBoxPlaceHolder")).unwrap();	
+		$("#BlackBoxIframe").children().unwrap().hide();
 		if(this.is_box_open){
 			$("#BlackBox").remove();
-		}		
+		}
 		is_box_open = false;
 	}
 	
@@ -383,6 +390,8 @@
 	
 	//_init_初始化方法，检查是否有BlackBox已经产生
 	BlackBox.prototype._init_ = function(){
+		$("#BlackBoxIframe").hide().appendTo($("#BlackBoxPlaceHolder")).unwrap();	
+		$("#BlackBoxIframe").children().unwrap().hide();
 		if($("#BlackBox").html())$("#BlackBox").remove();
 		is_box_open = true;
 	}
