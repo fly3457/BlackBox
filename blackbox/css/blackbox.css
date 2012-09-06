@@ -1,10 +1,14 @@
+html{
+	background: url(about:black) no-repeat fixed;
+}
+
 #BlackBox {
 	z-index: 8000;
 	position: fixed;
 	top:0;
 	left:0;
 	line-height: 140%;
-	font-size: 15px;
+	font-size: 14px;
 }
 
 #BlackBoxGap {
@@ -13,6 +17,7 @@
 	left:0;
 	background:black url("../images/fullbody.png") repeat;
 	z-index: -1;
+	_z-index: 7000;
 }
 
 #BlackBoxContent{
@@ -87,11 +92,11 @@
 	float: right;
 	margin-right:14px;
 	cursor: pointer;
-	line-height:20px;
 	padding:5px 8px;
+	line-height:20px;
 	-webkit-border-radius: 2px;  
 	-moz-border-radius: 2px;
-	border-radius:2px;
+	border-radius:2px;	
 }
 
 .Inner #actions .confirm{
@@ -132,4 +137,5 @@
 
 #BlackBoxAttachmentContainer img{
 	z-index: -1;
+	_z-index: 6900;
 }
