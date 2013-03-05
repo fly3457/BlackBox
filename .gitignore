@@ -159,5 +159,10 @@ pip-log.txt
 #Mr Developer
 .mr.developer.cfg
 
+# Phpstorm
+.idea/
+
 # Mac crap
 .DS_Store
+*/.DS_Store
+**/.DS_Store
