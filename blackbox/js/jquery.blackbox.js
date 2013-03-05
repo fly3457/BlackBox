@@ -149,7 +149,7 @@
 			return [width,height]
 		}
 		var _result = _getResize_()
-		var html = '<iframe id="BlackBoxIframe"  frameborder="0" hspace="0" width=' + _result[0] + ' height=' +_result[1] +' src='+url+ ($.browser.msie ? ' allowtransparency="true"' : '') + '></iframe>'
+		var html = '<iframe id="BlackBoxIframe"  frameborder="0" hspace="0" width=' + _result[0] + ' height=' +_result[1] +' src='+url+ ((!-[1,]) ? ' allowtransparency="true"' : '') + '></iframe>'
 		this.createBox(html,_result[0],_result[1]+5 ,true);
 		$this = $("#BlackBoxIframe");
 		if(!_allow_box_scrolling)$this.attr("scrolling","no");
@@ -213,7 +213,7 @@
 	BlackBox.prototype.closeBox = function(){
 		$("#BlackBoxIframe").hide().appendTo($("#BlackBoxPlaceHolder")).unwrap();	
 		$("#BlackBoxIframe").children().unwrap().hide();
-		if(this.is_box_open){
+		if(is_box_open){
 			$("#BlackBox").remove();
 		}
 		is_box_open = false;
@@ -365,7 +365,7 @@
 		//取保隔离层始终大小全屏，同时部分兼容IE6
 		var W_width = W.width(),
 				W_height = W.height();
-		if ( $.browser.msie && $.browser.version =="6.0" ){
+		if (!-[1,]&&!window.XMLHttpRequest){ //识别IE6
 			$(window).scroll(function(){
 				$("#BlackBox").css({
 					position:"absolute",
