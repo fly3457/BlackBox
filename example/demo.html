@@ -32,7 +32,7 @@
                         (function(i){
                             var name = "test_"+i;
                             box.load(name,function(){
-                                alert('<p>'+name+'载入完成');
+                                $body.append('<p>'+name+'载入完成');
                             });
                             setTimeout(function(){
                                 box.ready(name);
