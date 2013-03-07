@@ -1,4 +1,7 @@
-一款开源的JQUERY插件，包含ALERT、CONFIRM、PROMPT、IFRAME、INLINE 等效果，开发中。
-已经是最新版，使用方法正在更新中。
+##Blackbox
 
-Demo http://alvin.im/project/blackbox/
+一款开源的JQUERY插件，新版包括了 load , ready , alert , confirm 还有 prompt 方法。
+
+文档完善中
+
+简单的demo地址 ： <http://project.vincenting.com/blackbox/example/demo.html>
