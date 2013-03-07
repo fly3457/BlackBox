@@ -7,7 +7,7 @@
     <link rel="stylesheet" type="text/css" href="../blackbox/css/blackbox.css" media="screen" />
 </head>
 <body>
-
+<div style="height:1000px;"></div>
 </body>
 <script type="text/javascript" src="../blackbox/js/jquery-1.9.1.min.js"></script>
 <script type="text/javascript" src="../blackbox/js/jquery.blackbox.js"></script>
@@ -20,9 +20,11 @@
                 b = parseInt(10*Math.random());
 
         box.alert("Hello World");
-        box.prompt(a+" + "+b+" = ? ",function(){
+        box.prompt(a+" + "+b+" = ? ",function(data){
 
-            box.alert("回答正确!",function(){
+            if(data){
+
+                box.alert("回答正确!",function(){
                 box.load("index");
                 box.alert("现在来看看载入的功能～",function(){
                     var $body = $("body");
@@ -30,7 +32,7 @@
                         (function(i){
                             var name = "test_"+i;
                             box.load(name,function(){
-                                $body.append('<p>'+name+'载入完成');
+                                alert('<p>'+name+'载入完成');
                             });
                             setTimeout(function(){
                                 box.ready(name);
@@ -50,6 +52,9 @@
                 },1000)
             });
 
+            }else{
+                box.alert("你居然连这个都不会。。")
+            }
         },function(data){
             return(data==a+b);
         })

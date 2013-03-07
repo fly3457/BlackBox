@@ -208,7 +208,7 @@
         if (!this._setOverlay.call(this,'prompt',arguments,_delay_appear)&&!_delay_appear)return;
         var $BlackBox = $("#BlackBox");
         $BlackBox.append('<div class = "system Inner" id="prompt'+this._getNowID()+
-            '"><p>'+text+'</p><input id="boxInput"></div></div>');
+            '"><p>'+text+'</p><input id="boxInput"></div>');
         this._boxWrap($("#prompt"+this._getNowID()));
         this._setOverlayAttr.call(this);
         var $thisInput = $("#boxInput"),
@@ -319,6 +319,7 @@
             overlay_list.shift();
         }
         var _this = this;
+        $("#BBOverlay").unbind("click");
         if(overlay_list.length==0){
             $("#BlackBox").fadeOut(400,function(){
                 $(this).remove();
@@ -326,7 +327,6 @@
             });
         }else{
             if (callback)callback.call(this);
-            $("#BBOverlay").unbind("click");
             Array.prototype.push.call(overlay_list[0].args,true);
             this[overlay_list[0].type].apply(this,overlay_list[0].args);
         }

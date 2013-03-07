@@ -10,8 +10,8 @@ html{
 	line-height: 140%;
 	font-size: 14px;
     _position: absolute;
-    _top:expression(documentElement.scrollTop+documentElement.clientHeight-this.offsetHeight);
-    _left:expression(documentElement.scrollLeft+documentElement.clientWidth-this.offsetWidth-200);
+    _left:expression(eval(document.documentElement.scrollLeft));
+    _top:expression(eval(document.documentElement.scrollTop))
 }
 
 #BBOverlay {
@@ -74,7 +74,7 @@ html{
 }
 
 .BlackBoxContent button{
-    _height: 38px;
+    _height: 35px;
     _width: 60px;
     border-radius:4px;
     -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
@@ -82,6 +82,7 @@ html{
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);    display:inline-block;
     color:#fff;
     padding:0.5em 1em;
+    margin: 0 3px;
     background:#4297da;
     border: 1px solid #3663a4;
     cursor: pointer;
