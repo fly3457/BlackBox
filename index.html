@@ -7,7 +7,57 @@
     <link rel="stylesheet" type="text/css" href="static/style.css" media="screen" />
     <link rel="stylesheet" type="text/css" href="blackbox/css/blackbox.css" media="screen" />
     <script type="text/javascript" src="blackbox/js/jquery-1.9.1.min.js"></script>
-    <script type="text/javascript" src="blackbox/js/jquery.blackbox.js"></script>
+    <script type="text/javascript" src="blackbox/js/jquery.blackbox.min.js"></script>
+<script type="text/javascript">
+    
+    $(document).ready(function(){
+
+        var a = parseInt(10*Math.random()),
+                b = parseInt(10*Math.random());
+
+        __.alert("Hello World");
+        __.prompt(a+" + "+b+" = ? ",function(data){
+
+            if(data){
+
+                __.alert("回答正确!",function(){
+                    __.load("index");
+                    __.alert("现在来看看载入的功能～",function(){
+                        var $body = $("body");
+                        for(var i=0;i<10;i++){
+                            (function(i){
+                                var name = "test_"+i;
+                                __.load(name,function(){
+                                    $body.append('<p>'+name+'载入完成');
+                                });
+                                setTimeout(function(){
+                                    __.ready(name);
+                                },1000*i);
+                            }).call(this,i);
+                        }
+                        __.confirm("全部载入完成，是否载入项目主页",function(data){
+                            if(data){
+                                location.href = 'https://github.com/vincenting/Black__';
+                            }else{
+                                location.reload();
+                            }
+                        })
+                    });
+                    setTimeout(function(){
+                        __.ready("index");
+                    },1000)
+                });
+
+            }else{
+                __.alert("你居然连这个都不会。。")
+            }
+        },function(data){
+            return(data==a+b);
+        })
+
+    });
+    
+</script>
 </head>
 <body>
 
