@@ -42,7 +42,7 @@ html{
     padding:20px 20px 50px;
 }
 
-.BlackBoxContent .Inner {
+.BlackBoxContent .Inner ,.BlackBoxContent .normal {
 	background: #f9f9f9;
 	-webkit-border-radius: 2px;
 	-moz-border-radius: 2px;

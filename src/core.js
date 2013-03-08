@@ -64,7 +64,7 @@
         }else{
             this.config = default_config;
         }
-        this._setKeyShort.call(this);
+        if(this.config.enableKeyPress)this._setKeyShort.call(this);
     };
 
     /**
@@ -88,30 +88,24 @@
     };
 
     /**
-     * 删除boxContent的dom并执行回调函数
-     * @param callback
+     * 设置键盘快捷键
      * @private
      */
-    BlackBox.fn._clearBox = function(callback){
-        var $BlackBoxContent = $("#"+this._getNowID()),
-            _this = this;
-        $BlackBoxContent.fadeOut(400,function(){
-            $(this).remove();
-            _this._clearOverlay.call(_this,callback);
-        });
-    };
-
     BlackBox.fn._setKeyShort = function(){
-        var config = this.config;
+        var _this = this;
         $(document).bind('keydown.fb', function(e) {
             var $BlackBoxContent = $(".BlackBoxContent");
-            if (e.keyCode == 13 && config.enableKeyPress) {
+            if (e.keyCode == 13) {
                 e.preventDefault();
                 $BlackBoxContent.find(".submit").click();
-            } else if (e.keyCode == 27 && config.enableKeyPress) {
+            } else if (e.keyCode == 27) {
                 e.preventDefault();
                 var button =  $BlackBoxContent.find(".cancel")[0] || $BlackBoxContent.find(".close")[0];
-                if(button)$(button).click();
+                if(button){
+                    $(button).click();
+                }else{
+                    _this.boxClose.call(_this);
+                }
             }
         });
     };
@@ -188,26 +182,17 @@
             $BBOverlay.click(function(){
                 var button = $BlackBoxContent.find(".close")[0] ||
                     $BlackBoxContent.find(".cancel")[0] || $BlackBoxContent.find(".submit")[0];
-                if(button)$(button).click();
+                if(button){
+                    $(button).click();
+                }else{
+                    _this.boxClose.call(_this);
+                }
             });
             return;
         }
         $BBOverlay.click(function(){
-            _this._shakeBox.call(_this);
+            _this.boxShake.call(_this);
         })
-    };
-
-    /**
-     * 抖动盒子
-     * @private
-     */
-    BlackBox.fn._shakeBox = function(){
-        var $BlackBoxContent = $("#"+this._getNowID());
-        var box_left = $BlackBoxContent.offset().left;
-        for(var i=1; 4>=i; i++){
-            $BlackBoxContent.animate({left:box_left-(12-3*i)},50);
-            $BlackBoxContent.animate({left:box_left+2*(12-3*i)},50);
-        }
     };
 
     /**
@@ -226,16 +211,16 @@
         if(onCancel){
             $BlackBoxAction.append('<button class="cancel">取消</button>');
             $BlackBoxAction.find(".cancel").click(function(){
-                _this._clearBox.call(_this,onCancel);
+                _this.boxClose.call(_this,onCancel);
             })
         }
         if(onSubmit){
             $BlackBoxAction.append('<button class="submit">确定</button>');
             $BlackBoxAction.find(".submit").click(function(){
                 if(!verify || verify.call(_this)){
-                    _this._clearBox.call(_this,onSubmit);
+                    _this.boxClose.call(_this,onSubmit);
                 }else{
-                    _this._shakeBox.call(_this);
+                    _this.boxShake.call(_this);
                 }
             })
         }
@@ -251,7 +236,7 @@
             _this = this;
         $BlackBoxContent.append('<div class="close">Close</div>');
         $BlackBoxContent.find(".close").click(function(){
-            _this._clearBox.call(_this,onCancel);
+            _this.boxClose.call(_this,onCancel);
         })
     };
 
@@ -266,5 +251,6 @@
     };
 
     root.BlackBox = BlackBox;
+    root.__ = new BlackBox();
 
 }).call(window);
