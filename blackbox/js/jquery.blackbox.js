@@ -318,8 +318,8 @@
                 $BlackBoxContent.find(".submit").click();
             } else if (e.keyCode == 27) {
                 e.preventDefault();
-                var button =  $BlackBoxContent.find(".cancel")[0] || $BlackBoxContent.find(".close")[0];
-                if(button){
+                var button = $BlackBoxContent.find(".close")[0] ||
+                    $BlackBoxContent.find(".cancel")[0] || $BlackBoxContent.find(".submit")[0];                if(button){
                     $(button).click();
                 }else{
                     _this.boxClose.call(_this);
