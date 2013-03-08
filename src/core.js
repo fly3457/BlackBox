@@ -13,7 +13,7 @@
 (function(){
 
     var root = this ,
-        //用于处理同时多个弹出存在
+    //用于处理同时多个弹出存在
         box_id = 0,
         overlay_list = [],
         load_array = {},
@@ -65,181 +65,6 @@
             this.config = default_config;
         }
         this._setKeyShort.call(this);
-    };
-
-    /**
-     * 载入内容
-     * @param item 载入内容
-     * @param callback 载入完成执行内容
-     * @param _delay_appear
-     */
-    BlackBox.fn.load = function(item,callback,_delay_appear){
-        if(arguments.length===0)return;
-        callback = callback || $.noop;
-        if(!_delay_appear){
-            if(Object.prototype.toString.call(load_array[item])=='[object Array]'){
-                load_array[item].push(callback);
-            }
-            load_array[item] = [callback];
-        }
-        for (var key in load_array){
-            if (key !== item)return;
-        }
-        if(arguments.length===1){
-            Array.prototype.push.call(arguments,callback);
-        }
-        if (!this._setOverlay.call(this,'load',arguments,_delay_appear)&&!_delay_appear)return;
-        $("#BlackBox").append('<div id="BlackBoxLoad">载入中</div>');
-        var $BoxLoad = $("#BlackBoxLoad").fadeTo(0, 0).fadeTo(400, 1),
-            resize = function () {
-                $BoxLoad.css({
-                    left: ($W.width() - $BoxLoad.width()) / 2,
-                    top: ($W.height() - $BoxLoad.height()) / 2
-                })
-            };
-        resize.call(this);
-        $W.resize(resize);
-    };
-
-    /**
-     * 载入完毕并执行相应内容载入完成时的执行函数
-     * @param item
-     */
-    BlackBox.fn.ready = function (item) {
-        if(arguments.length===0)return;
-        var funcs = load_array[item];
-        if(funcs){
-            for(var i=0;i<funcs.length;i++){
-                var func = funcs[i];
-                func.call(this);
-            }
-        }
-        delete load_array[item];
-        for(var key in load_array){
-            if(load_array.hasOwnProperty(key))return;
-        }
-        $("#BlackBoxLoad").fadeTo(400, 0);
-        this._clearOverlay.call(this);
-    };
-
-    /**
-     * 强制停止载入队列
-     */
-    BlackBox.fn.loadClear = function(callback){
-        callback = callback || $.noop;
-        for(var key in load_array){
-            if(load_array.hasOwnProperty(key)){
-                delete load_array[key];
-            }
-        }
-        $("#BlackBoxLoad").fadeTo(400, 0);
-        this._clearOverlay.call(this,callback);
-    };
-
-    /**
-     * Alert效果
-     * @param {String} text
-     * @param {Function} callback
-     * @param _delay_appear
-     */
-    BlackBox.fn.alert = function(text,callback,_delay_appear){
-        if(arguments.length===0)return;
-        callback = callback || $.noop;
-        if(arguments.length===1){
-            Array.prototype.push.call(arguments,callback);
-        }
-        if (!this._setOverlay.call(this,'alert',arguments,_delay_appear)&&!_delay_appear)return;
-        var $BlackBox = $("#BlackBox");
-        $BlackBox.append('<div class = "system Inner" id="alert'+this._getNowID()+
-            '"><p>'+text+'</p></div>');
-        this._boxWrap($("#alert"+this._getNowID()));
-        this._setOverlayAttr.call(this);
-        if(this.config.displayClose){
-            this._setClose.call(this,callback);
-        }
-        this._setButton.call(this,callback);
-    };
-
-    /**
-     * Confirm 效果
-     * @param text
-     * @param callback 确认输入true取消输入false
-     * @param _delay_appear
-     */
-    BlackBox.fn.confirm = function(text,callback,_delay_appear){
-        if(arguments.length===0)return;
-        callback = callback || $.noop;
-        if(arguments.length===1){
-            Array.prototype.push.call(arguments,callback);
-        }
-        if (!this._setOverlay.call(this,'confirm',arguments,_delay_appear)&&!_delay_appear)return;
-        var $BlackBox = $("#BlackBox");
-        $BlackBox.append('<div class = "system Inner" id="confirm'+this._getNowID()+
-            '"><p>'+text+'</p></div>');
-        this._boxWrap($("#confirm"+this._getNowID()));
-        this._setOverlayAttr.call(this);
-        var onSubmit = function(){
-            return callback.call(this,true);
-        },onCancel = function(){
-            return callback.call(this,false);
-        };
-        if(this.config.displayClose){
-            this._setClose.call(this,onCancel);
-        }
-        this._setButton.call(this,onSubmit,onCancel);
-    };
-
-    /**
-     * Prompt 方法
-     * @param text
-     * @param callback
-     * @param verify 验证用户输入内容，取消返回null
-     * @param _delay_appear
-     */
-    BlackBox.fn.prompt = function(text,callback,verify,_delay_appear){
-        if(arguments.length===0)return;
-        callback = callback || $.noop;
-        verify = verify || function(){
-            return true
-        };
-        if(arguments.length === 1){
-            Array.prototype.push.call(arguments,callback,verify);
-        }
-        if(arguments.length === 2){
-            Array.prototype.push.call(arguments,verify);
-        }
-        if (!this._setOverlay.call(this,'prompt',arguments,_delay_appear)&&!_delay_appear)return;
-        var $BlackBox = $("#BlackBox");
-        $BlackBox.append('<div class = "system Inner" id="prompt'+this._getNowID()+
-            '"><p>'+text+'</p><input id="boxInput"></div>');
-        this._boxWrap($("#prompt"+this._getNowID()));
-        this._setOverlayAttr.call(this);
-        var $thisInput = $("#boxInput").focus(),
-            onSubmit = function(){
-                return callback.call(this,$thisInput.val());
-            },
-            onCancel = function(){
-                return callback.call(this,null);
-            },
-            _this = this;
-        $thisInput.blur(function(){
-            $(this).val($.trim($(this).val()));
-        });
-        if(this.config.displayClose){
-            this._setClose.call(this,onCancel);
-        }
-        var _verify = function(){
-            if((_this.config.allowPromptBlank || $thisInput.val()) &&
-                verify.call(this,$thisInput.val())){
-                return true;
-            }
-            $thisInput.addClass("boxError");
-            return false
-        };
-        $thisInput.focus(function(){
-           $(this).removeClass("boxError");
-        });
-        this._setButton.call(this,onSubmit,onCancel,_verify);
     };
 
     /**
@@ -362,7 +187,7 @@
         if(click_effect==='close'){
             $BBOverlay.click(function(){
                 var button = $BlackBoxContent.find(".close")[0] ||
-                $BlackBoxContent.find(".cancel")[0] || $BlackBoxContent.find(".submit")[0];
+                    $BlackBoxContent.find(".cancel")[0] || $BlackBoxContent.find(".submit")[0];
                 if(button)$(button).click();
             });
             return;
