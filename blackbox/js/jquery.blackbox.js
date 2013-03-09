@@ -10,10 +10,10 @@
  *
  */
 
-(function(){
+(function() {
 
-    var root = this ,
-        //用于处理同时多个弹出存在
+    var root = this,
+    //用于处理同时多个弹出存在
         box_id = 0,
         overlay_list = [],
         load_array = {},
@@ -22,9 +22,9 @@
     /**
      * @constructor
      */
-    var BlackBox = function(){
+    var BlackBox = function() {
 
-        this.init.apply(this,arguments);
+        this.init.apply(this, arguments);
 
     };
 
@@ -42,7 +42,7 @@
      * enableKeyPress：使用快捷键确定和取消
      * @param {Object} config
      */
-    BlackBox.fn.init = function(config){
+    BlackBox.fn.init = function(config) {
 
         var default_config = {
             'clickOverlayEffect': 'shake',
@@ -55,16 +55,17 @@
             'enableKeyPress': true
         };
 
-        if(Object.prototype.toString.call(config)=='[object Object]'){
+        if (Object.prototype.toString.call(config) == '[object Object]') {
             var this_config = {};
-            jQuery.each(default_config,function(item,value){
-                this_config[item] = config[item] || value;
-            });
+            jQuery.each(default_config,
+                function(item, value) {
+                    this_config[item] = config[item] || value;
+                });
             this.config = this_config;
-        }else{
+        } else {
             this.config = default_config;
         }
-        if(this.config.enableKeyPress)this._setKeyShort.call(this);
+        if (this.config.enableKeyPress) this._setKeyShort.call(this);
     };
 
     //TODO 队列处理有问题，最终导致dom删除不完全。需要把握好时间。
@@ -74,25 +75,25 @@
      * @param callback 载入完成执行内容
      * @param _delay_appear
      */
-    BlackBox.fn.load = function(item,callback,_delay_appear){
-        if(arguments.length===0)return;
+    BlackBox.fn.load = function(item, callback, _delay_appear) {
+        if (arguments.length === 0) return;
         callback = callback || $.noop;
-        if(!_delay_appear){
-            if(Object.prototype.toString.call(load_array[item])=='[object Array]'){
+        if (!_delay_appear) {
+            if (Object.prototype.toString.call(load_array[item]) == '[object Array]') {
                 load_array[item].push(callback);
             }
             load_array[item] = [callback];
         }
-        for (var key in load_array){
-            if (key !== item)return;
+        for (var key in load_array) {
+            if (key !== item) return;
         }
-        if(arguments.length===1){
-            Array.prototype.push.call(arguments,callback);
+        if (arguments.length === 1) {
+            Array.prototype.push.call(arguments, callback);
         }
-        if (!this._setOverlay.call(this,'load',arguments,_delay_appear)&&!_delay_appear)return;
+        if (!this._setOverlay.call(this, 'load', arguments, _delay_appear) && !_delay_appear) return;
         $("#BlackBox").append('<div id="BlackBoxLoad">载入中</div>');
         var $BoxLoad = $("#BlackBoxLoad").fadeTo(0, 0).fadeTo(400, 1),
-            resize = function () {
+            resize = function() {
                 $BoxLoad.css({
                     left: ($W.width() - $BoxLoad.width()) / 2,
                     top: ($W.height() - $BoxLoad.height()) / 2
@@ -106,18 +107,18 @@
      * 载入完毕并执行相应内容载入完成时的执行函数
      * @param item
      */
-    BlackBox.fn.ready = function (item) {
-        if(arguments.length===0)return;
-        var funcs = load_array[item];
-        if(funcs){
-            for(var i=0;i<funcs.length;i++){
-                var func = funcs[i];
+    BlackBox.fn.ready = function(item) {
+        if (arguments.length === 0) return;
+        var func_list = load_array[item];
+        if (func_list) {
+            for (var i = 0; i < func_list.length; i++) {
+                var func = func_list[i];
                 func.call(this);
             }
         }
         delete load_array[item];
-        for(var key in load_array){
-            if(load_array.hasOwnProperty(key))return;
+        for (var key in load_array) {
+            if (load_array.hasOwnProperty(key)) return;
         }
         $("#BlackBoxLoad").fadeTo(400, 0);
         this._clearOverlay.call(this);
@@ -126,15 +127,15 @@
     /**
      * 强制停止载入队列
      */
-    BlackBox.fn.loadClear = function(callback){
+    BlackBox.fn.loadClear = function(callback) {
         callback = callback || $.noop;
-        for(var key in load_array){
-            if(load_array.hasOwnProperty(key)){
+        for (var key in load_array) {
+            if (load_array.hasOwnProperty(key)) {
                 delete load_array[key];
             }
         }
         $("#BlackBoxLoad").fadeTo(400, 0);
-        this._clearOverlay.call(this,callback);
+        this._clearOverlay.call(this, callback);
     };
 
     /**
@@ -144,19 +145,18 @@
      * @param options
      * @param _delay_appear
      */
-    BlackBox.fn.alert = function(text,callback,options,_delay_appear){
-        if(arguments.length===0)return;
-        var args = this._getArgs.apply(this,arguments);
-        if (!this._setOverlay.call(this,'alert',args,args[3])&&!args[3])return;
+    BlackBox.fn.alert = function(text, callback, options, _delay_appear) {
+        if (arguments.length === 0) return;
+        var args = this._getArgs.apply(this, arguments);
+        if (!this._setOverlay.call(this, 'alert', args, args[3]) && !args[3]) return;
         var $BlackBox = $("#BlackBox");
-        $BlackBox.append('<div class = "system Inner" id="alert'+this._getNowID()+
-            '"><p>'+args[0]+'</p></div>');
-        this._boxWrap($("#alert"+this._getNowID()),args[2]);
+        $BlackBox.append('<div class = "system Inner" id="alert' + this._getNowID() + '"><p>' + args[0] + '</p></div>');
+        this._boxWrap($("#alert" + this._getNowID()), args[2]);
         this._setOverlayAttr.call(this);
-        if(this.config.displayClose){
-            this._setClose.call(this,args[1]);
+        if (this.config.displayClose) {
+            this._setClose.call(this, args[1]);
         }
-        this._setButton.call(this,args[1],null,args[2]);
+        this._setButton.call(this, args[1], null, args[2]);
     };
 
     /**
@@ -166,24 +166,24 @@
      * @param options
      * @param _delay_appear
      */
-    BlackBox.fn.confirm = function(text,callback,options,_delay_appear){
-        if(arguments.length===0)return;
-        var args = this._getArgs.apply(this,arguments);
-        if (!this._setOverlay.call(this,'confirm',args,args[3])&&!args[3])return;
+    BlackBox.fn.confirm = function(text, callback, options, _delay_appear) {
+        if (arguments.length === 0) return;
+        var args = this._getArgs.apply(this, arguments);
+        if (!this._setOverlay.call(this, 'confirm', args, args[3]) && !args[3]) return;
         var $BlackBox = $("#BlackBox");
-        $BlackBox.append('<div class = "system Inner" id="confirm'+this._getNowID()+
-            '"><p>'+args[0]+'</p></div>');
-        this._boxWrap($("#confirm"+this._getNowID()),args[2]);
+        $BlackBox.append('<div class = "system Inner" id="confirm' + this._getNowID() + '"><p>' + args[0] + '</p></div>');
+        this._boxWrap($("#confirm" + this._getNowID()), args[2]);
         this._setOverlayAttr.call(this);
-        var onSubmit = function(){
-            return args[1].call(this,true);
-        },onCancel = function(){
-            return args[1].call(this,false);
-        };
-        if(this.config.displayClose){
-            this._setClose.call(this,onCancel);
+        var onSubmit = function() {
+                return args[1].call(this, true);
+            },
+            onCancel = function() {
+                return args[1].call(this, false);
+            };
+        if (this.config.displayClose) {
+            this._setClose.call(this, onCancel);
         }
-        this._setButton.call(this,onSubmit,onCancel,args[2]);
+        this._setButton.call(this, onSubmit, onCancel, args[2]);
     };
 
     /**
@@ -193,41 +193,40 @@
      * @param options
      * @param _delay_appear
      */
-    BlackBox.fn.prompt = function(text,callback,options,_delay_appear){
-        if(arguments.length===0)return;
-        var args = this._getArgs.apply(this,arguments);
-        if (!this._setOverlay.call(this,'prompt',arguments,args[3])&&!args[3])return;
-        var verify = args[2].verify || function(){
-            return true;
-        };
+    BlackBox.fn.prompt = function(text, callback, options, _delay_appear) {
+        if (arguments.length === 0) return;
+        var args = this._getArgs.apply(this, arguments);
+        if (!this._setOverlay.call(this, 'prompt', arguments, args[3]) && !args[3]) return;
+        var verify = args[2].verify ||
+            function() {
+                return true;
+            };
         var $BlackBox = $("#BlackBox");
-        $BlackBox.append('<div class = "system Inner" id="prompt'+this._getNowID()+
-            '"><p>'+args[0]+'</p><input id="boxInput"></div>');
-        this._boxWrap($("#prompt"+this._getNowID()),args[2]);
+        $BlackBox.append('<div class = "system Inner" id="prompt' + this._getNowID() + '"><p>' + args[0] + '</p><input id="boxInput"></div>');
+        this._boxWrap($("#prompt" + this._getNowID()), args[2]);
         this._setOverlayAttr.call(this);
         var $thisInput = $("#boxInput").focus(),
-            onSubmit = function(){
-                return args[1].call(this,$thisInput.val());
+            onSubmit = function() {
+                return args[1].call(this, $thisInput.val());
             },
-            onCancel = function(){
-                return args[1].call(this,null);
+            onCancel = function() {
+                return args[1].call(this, null);
             },
             _this = this;
-        $thisInput.blur(function(){
+        $thisInput.blur(function() {
             $(this).val($.trim($(this).val()));
         });
-        if(this.config.displayClose){
-            this._setClose.call(this,onCancel);
+        if (this.config.displayClose) {
+            this._setClose.call(this, onCancel);
         }
-        args[2].verify = function(){
-            if((_this.config.allowPromptBlank || $thisInput.val()) &&
-                verify.call(this,$thisInput.val())){
+        args[2].verify = function() {
+            if ((_this.config.allowPromptBlank || $thisInput.val()) && verify.call(this, $thisInput.val())) {
                 return true;
             }
             $thisInput.addClass("boxError").focus();
             return false;
         };
-        this._setButton.call(this,onSubmit,onCancel,args[2]);
+        this._setButton.call(this, onSubmit, onCancel, args[2]);
     };
 
     /**
@@ -236,12 +235,12 @@
      * @param _delay_appear
      * @returns {*|jQuery|HTMLElement}
      */
-    BlackBox.fn.popup = function(html,_delay_appear){
-        if(arguments.length===0)return $W;
-        if (!this._setOverlay.call(this,'popup',arguments,_delay_appear)&&!_delay_appear)return $W;
+    BlackBox.fn.popup = function(html, _delay_appear) {
+        if (arguments.length === 0) return $W;
+        if (!this._setOverlay.call(this, 'popup', arguments, _delay_appear) && !_delay_appear) return $W;
         var $BlackBox = $("#BlackBox");
-        $BlackBox.append('<div class="normal" id="popup'+this._getNowID()+'">'+html+'</div>');
-        this._boxWrap($("#popup"+this._getNowID()));
+        $BlackBox.append('<div class="normal" id="popup' + this._getNowID() + '">' + html + '</div>');
+        this._boxWrap($("#popup" + this._getNowID()));
         this._setOverlayAttr.call(this);
         return $BlackBox;
     };
@@ -250,26 +249,33 @@
      * 删除boxContent的dom并执行回调函数
      * @param callback
      */
-    BlackBox.fn.boxClose = function(callback){
-        var $BlackBoxContent = $("#"+this._getNowID()),
+    BlackBox.fn.boxClose = function(callback) {
+        var $BlackBoxContent = $("#" + this._getNowID()),
             _this = this;
-        if(!$BlackBoxContent[0])return;
-        $BlackBoxContent.fadeOut(400,function(){
-            $(this).remove();
-            _this._clearOverlay.call(_this,callback);
-        });
+        if (!$BlackBoxContent[0]) return;
+        $BlackBoxContent.fadeOut(400,
+            function() {
+                $(this).remove();
+                _this._clearOverlay.call(_this, callback);
+            });
     };
 
     /**
      * 抖动盒子
      */
-    BlackBox.fn.boxShake = function(){
-        var $BlackBoxContent = $("#"+this._getNowID());
-        if(!$BlackBoxContent[0])return;
+    BlackBox.fn.boxShake = function() {
+        var $BlackBoxContent = $("#" + this._getNowID());
+        if (!$BlackBoxContent[0]) return;
         var box_left = $BlackBoxContent.offset().left;
-        for(var i=1; 4>=i; i++){
-            $BlackBoxContent.animate({left:box_left-(12-3*i)},50);
-            $BlackBoxContent.animate({left:box_left+2*(12-3*i)},50);
+        for (var i = 1; 4 >= i; i++) {
+            $BlackBoxContent.animate({
+                    left: box_left - (12 - 3 * i)
+                },
+                50);
+            $BlackBoxContent.animate({
+                    left: box_left + 2 * (12 - 3 * i)
+                },
+                50);
         }
     };
 
@@ -282,18 +288,18 @@
      * @returns {Arguments}
      * @private
      */
-    BlackBox.fn._getArgs = function(text,callback,options,_delay_appear){
+    BlackBox.fn._getArgs = function(text, callback, options, _delay_appear) {
         callback = callback || $.noop;
-        if(!$.isFunction(callback)){
+        if (!$.isFunction(callback)) {
             options = callback;
             callback = $.noop;
         }
         options = options || {};
-        if(arguments.length === 1){
-            Array.prototype.push.call(arguments,callback,options);
+        if (arguments.length === 1) {
+            Array.prototype.push.call(arguments, callback, options);
         }
-        if(arguments.length === 2){
-            Array.prototype.push.call(arguments,options);
+        if (arguments.length === 2) {
+            Array.prototype.push.call(arguments, options);
         }
         return arguments;
     };
@@ -304,19 +310,19 @@
      * @param options
      * @private
      */
-    BlackBox.fn._boxWrap = function ($target,options){
-        $target.wrap('<div class="BlackBoxContent" id="'+this._getNowID()+'"></div>');
-        var $BlackBoxContent = $("#"+this._getNowID()).fadeTo(0,0).fadeTo(400,1),
+    BlackBox.fn._boxWrap = function($target, options) {
+        $target.wrap('<div class="BlackBoxContent" id="' + this._getNowID() + '"></div>');
+        var $BlackBoxContent = $("#" + this._getNowID()).fadeTo(0, 0).fadeTo(400, 1),
             box_width = $BlackBoxContent.width(),
             box_height = $BlackBoxContent.height(),
-            resize = function(){
+            resize = function() {
                 $BlackBoxContent.css({
-                    left : ($W.width() - box_width)/2 + 'px',
-                    top : ($W.height() - box_height - 80)/2 + 'px'
+                    left: ($W.width() - box_width) / 2 + 'px',
+                    top: ($W.height() - box_height - 80) / 2 + 'px'
                 })
             };
-        if(options.title){
-            $BlackBoxContent.prepend('<p class="title">'+options.title+'</div>');
+        if (options.title) {
+            $BlackBoxContent.prepend('<p class="title">' + options.title + '</div>');
         }
         $W.resize(resize);
         resize.call(this);
@@ -326,23 +332,24 @@
      * 设置键盘快捷键
      * @private
      */
-    BlackBox.fn._setKeyShort = function(){
+    BlackBox.fn._setKeyShort = function() {
         var _this = this;
-        $(document).bind('keydown.fb', function(e) {
-            var $BlackBoxContent = $(".BlackBoxContent");
-            if (e.keyCode == 13) {
-                e.preventDefault();
-                $BlackBoxContent.find(".submit").click();
-            } else if (e.keyCode == 27) {
-                e.preventDefault();
-                var button = $BlackBoxContent.find(".close")[0] ||
-                    $BlackBoxContent.find(".cancel")[0] || $BlackBoxContent.find(".submit")[0];                if(button){
-                    $(button).click();
-                }else{
-                    _this.boxClose.call(_this);
+        $(document).bind('keydown.fb',
+            function(e) {
+                var $BlackBoxContent = $(".BlackBoxContent");
+                if (e.keyCode == 13) {
+                    e.preventDefault();
+                    $BlackBoxContent.find(".submit").click();
+                } else if (e.keyCode == 27) {
+                    e.preventDefault();
+                    var button = $BlackBoxContent.find(".close")[0] || $BlackBoxContent.find(".cancel")[0] || $BlackBoxContent.find(".submit")[0];
+                    if (button) {
+                        $(button).click();
+                    } else {
+                        _this.boxClose.call(_this);
+                    }
                 }
-            }
-        });
+            });
     };
 
     /**
@@ -350,28 +357,28 @@
      * @returns {boolean}
      * @private
      */
-    BlackBox.fn._setOverlay = function(type,args,delay_appear){
+    BlackBox.fn._setOverlay = function(type, args, delay_appear) {
         box_id += 1;
-        if(!delay_appear){
+        if (!delay_appear) {
             overlay_list.push({
-                id : box_id,
-                type : type,
-                args : args
+                id: box_id,
+                type: type,
+                args: args
             });
         }
-        if(overlay_list.length!==1){
+        if (overlay_list.length !== 1) {
             return false;
         }
         $("body").append('<div id="BlackBox"><div id="BBOverlay"></div></div>');
         var $BBOverlay = $("#BBOverlay"),
             config = this.config;
-        if(!delay_appear){
+        if (!delay_appear) {
             $BBOverlay.css({
-                background_color:config.overlayColor
-            }).fadeTo(0,0).fadeTo(400,config.overlayOpacity);
+                background_color: config.overlayColor
+            }).fadeTo(0, 0).fadeTo(400, config.overlayOpacity);
         }
-        var resize = function(){
-            $BBOverlay.width($W.width()+"px").height($W.height()+"px");
+        var resize = function() {
+            $BBOverlay.width($W.width() + "px").height($W.height() + "px");
         };
         resize.call(this);
         $W.resize(resize);
@@ -384,23 +391,24 @@
      * @private
      * @param callback
      */
-    BlackBox.fn._clearOverlay = function(callback,force){
-        if(force){
+    BlackBox.fn._clearOverlay = function(callback, force) {
+        if (force) {
             overlay_list.length = 0;
-        }else{
+        } else {
             overlay_list.shift();
         }
         var _this = this;
         $("#BBOverlay").unbind("click");
-        if(overlay_list.length==0){
-            $("#BlackBox").fadeOut(400,function(){
-                $(this).remove();
-                if (callback)callback.call(_this);
-            });
-        }else{
-            if (callback)callback.call(this);
-            Array.prototype.push.call(overlay_list[0].args,true);
-            this[overlay_list[0].type].apply(this,overlay_list[0].args);
+        if (overlay_list.length == 0) {
+            $("#BlackBox").fadeOut(400,
+                function() {
+                    $(this).remove();
+                    if (callback) callback.call(_this);
+                });
+        } else {
+            if (callback) callback.call(this);
+            Array.prototype.push.call(overlay_list[0].args, true);
+            this[overlay_list[0].type].apply(this, overlay_list[0].args);
         }
     };
 
@@ -408,26 +416,25 @@
      * 根据config内容设置遮罩点击效果
      * @private
      */
-    BlackBox.fn._setOverlayAttr = function(){
+    BlackBox.fn._setOverlayAttr = function() {
         var click_effect = this.config.clickOverlayEffect,
-            $BlackBoxContent = $("#"+this._getNowID()),
+            $BlackBoxContent = $("#" + this._getNowID()),
             $BBOverlay = $("#BBOverlay"),
             _this = this;
-        if(click_effect==='close'){
-            $BBOverlay.click(function(){
-                var button = $BlackBoxContent.find(".close")[0] ||
-                $BlackBoxContent.find(".cancel")[0] || $BlackBoxContent.find(".submit")[0];
-                if(button){
+        if (click_effect === 'close') {
+            $BBOverlay.click(function() {
+                var button = $BlackBoxContent.find(".close")[0] || $BlackBoxContent.find(".cancel")[0] || $BlackBoxContent.find(".submit")[0];
+                if (button) {
                     $(button).click();
-                }else{
+                } else {
                     _this.boxClose.call(_this);
                 }
             });
             return;
         }
-        $BBOverlay.click(function(){
+        $BBOverlay.click(function() {
             var $input = $BlackBoxContent.find("input");
-            if($input.length===1){
+            if ($input.length === 1) {
                 $input.focus();
             }
             _this.boxShake.call(_this);
@@ -441,25 +448,25 @@
      * @param options
      * @private
      */
-    BlackBox.fn._setButton = function(onSubmit,onCancel,options){
-        if(arguments.length===0)return;
-        var $BlackBoxContent = $("#"+this._getNowID()),
+    BlackBox.fn._setButton = function(onSubmit, onCancel, options) {
+        if (arguments.length === 0) return;
+        var $BlackBoxContent = $("#" + this._getNowID()),
             _this = this;
         $BlackBoxContent.find(".Inner").append('<div id="BlackBoxAction"></div>');
         var $BlackBoxAction = $("#BlackBoxAction");
-        if(onCancel){
+        if (onCancel) {
             $BlackBoxAction.append('<button class="cancel">取消</button>');
-            $BlackBoxAction.find(".cancel").click(function(){
-                _this.boxClose.call(_this,onCancel);
+            $BlackBoxAction.find(".cancel").click(function() {
+                _this.boxClose.call(_this, onCancel);
             })
         }
-        if(onSubmit){
+        if (onSubmit) {
             var button_text = options.value || '确定';
-            $BlackBoxAction.append('<button class="submit">'+button_text+'</button>');
-            $BlackBoxAction.find(".submit").click(function(){
-                if(!options.verify || options.verify.call(_this)){
-                    _this.boxClose.call(_this,onSubmit);
-                }else{
+            $BlackBoxAction.append('<button class="submit">' + button_text + '</button>');
+            $BlackBoxAction.find(".submit").click(function() {
+                if (!options.verify || options.verify.call(_this)) {
+                    _this.boxClose.call(_this, onSubmit);
+                } else {
                     _this.boxShake.call(_this);
                 }
             })
@@ -471,12 +478,12 @@
      * @param onCancel
      * @private
      */
-    BlackBox.fn._setClose = function(onCancel){
-        var $BlackBoxContent = $("#"+this._getNowID()),
+    BlackBox.fn._setClose = function(onCancel) {
+        var $BlackBoxContent = $("#" + this._getNowID()),
             _this = this;
         $BlackBoxContent.append('<div class="close">Close</div>');
-        $BlackBoxContent.find(".close").click(function(){
-            _this.boxClose.call(_this,onCancel);
+        $BlackBoxContent.find(".close").click(function() {
+            _this.boxClose.call(_this, onCancel);
         })
     };
 
@@ -485,9 +492,9 @@
      * @returns {string}
      * @private
      */
-    BlackBox.fn._getNowID = function(){
+    BlackBox.fn._getNowID = function() {
         var id = overlay_list[0].id;
-        return "_box_"+id;
+        return "_box_" + id;
     };
 
     root.BlackBox = BlackBox;
