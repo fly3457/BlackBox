@@ -26,6 +26,7 @@ html{
 .BlackBoxContent {
 	z-index: 8050;
     background:#595757;
+    background-color: rgba(0, 0, 0, 0.4);
 	position: absolute;
 	-webkit-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
 	-moz-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5); 
@@ -35,6 +36,15 @@ html{
     border-radius: 2px;
     border: 1px solid #3e3a39;
     padding: 1px 2px;
+}
+
+.BlackBoxContent .title {
+    margin: 0;
+    padding: 5px 0 5px 10px;
+    font-size: 13px;
+    color: #cccccc;
+    font-weight: bold;
+    text-shadow: -1px 0 #444;
 }
 
 .BlackBoxContent .system {

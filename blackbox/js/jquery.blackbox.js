@@ -136,47 +136,66 @@
         this._clearOverlay.call(this,callback);
     };
 
+    //TODO 队列处理有问题，最终导致dom删除不完全。需要把握好时间。
     /**
      * Alert效果
      * @param {String} text
      * @param {Function} callback
+     * @param options
      * @param _delay_appear
      */
-    BlackBox.fn.alert = function(text,callback,_delay_appear){
+    BlackBox.fn.alert = function(text,callback,options,_delay_appear){
         if(arguments.length===0)return;
         callback = callback || $.noop;
-        if(arguments.length===1){
-            Array.prototype.push.call(arguments,callback);
+        if(!$.isFunction(callback)){
+            options = callback;
+            callback = $.noop;
+        }
+        options = options || {};
+        if(arguments.length === 1){
+            Array.prototype.push.call(arguments,callback,options);
+        }
+        if(arguments.length === 2){
+            Array.prototype.push.call(arguments,options);
         }
         if (!this._setOverlay.call(this,'alert',arguments,_delay_appear)&&!_delay_appear)return;
         var $BlackBox = $("#BlackBox");
         $BlackBox.append('<div class = "system Inner" id="alert'+this._getNowID()+
             '"><p>'+text+'</p></div>');
-        this._boxWrap($("#alert"+this._getNowID()));
+        this._boxWrap($("#alert"+this._getNowID()),options);
         this._setOverlayAttr.call(this);
         if(this.config.displayClose){
             this._setClose.call(this,callback);
         }
-        this._setButton.call(this,callback);
+        this._setButton.call(this,callback,null,options);
     };
 
     /**
      * Confirm 效果
      * @param text
      * @param callback 确认输入true取消输入false
+     * @param options
      * @param _delay_appear
      */
-    BlackBox.fn.confirm = function(text,callback,_delay_appear){
+    BlackBox.fn.confirm = function(text,callback,options,_delay_appear){
         if(arguments.length===0)return;
         callback = callback || $.noop;
-        if(arguments.length===1){
-            Array.prototype.push.call(arguments,callback);
+        if(!$.isFunction(callback)){
+            options = callback;
+            callback = $.noop;
+        }
+        options = options || {};
+        if(arguments.length === 1){
+            Array.prototype.push.call(arguments,callback,options);
+        }
+        if(arguments.length === 2){
+            Array.prototype.push.call(arguments,options);
         }
         if (!this._setOverlay.call(this,'confirm',arguments,_delay_appear)&&!_delay_appear)return;
         var $BlackBox = $("#BlackBox");
         $BlackBox.append('<div class = "system Inner" id="confirm'+this._getNowID()+
             '"><p>'+text+'</p></div>');
-        this._boxWrap($("#confirm"+this._getNowID()));
+        this._boxWrap($("#confirm"+this._getNowID()),options);
         this._setOverlayAttr.call(this);
         var onSubmit = function(){
             return callback.call(this,true);
@@ -186,33 +205,38 @@
         if(this.config.displayClose){
             this._setClose.call(this,onCancel);
         }
-        this._setButton.call(this,onSubmit,onCancel);
+        this._setButton.call(this,onSubmit,onCancel,options);
     };
 
     /**
      * Prompt 方法
      * @param text
      * @param callback
-     * @param verify 验证用户输入内容，取消返回null
+     * @param options
      * @param _delay_appear
      */
-    BlackBox.fn.prompt = function(text,callback,verify,_delay_appear){
+    BlackBox.fn.prompt = function(text,callback,options,_delay_appear){
         if(arguments.length===0)return;
         callback = callback || $.noop;
-        verify = verify || function(){
-            return true
-        };
+        if(!$.isFunction(callback)){
+            options = callback;
+            callback = $.noop;
+        }
+        options = options || {};
         if(arguments.length === 1){
-            Array.prototype.push.call(arguments,callback,verify);
+            Array.prototype.push.call(arguments,callback,options);
         }
         if(arguments.length === 2){
-            Array.prototype.push.call(arguments,verify);
+            Array.prototype.push.call(arguments,options);
         }
         if (!this._setOverlay.call(this,'prompt',arguments,_delay_appear)&&!_delay_appear)return;
+        var verify = options.verify || function(){
+            return true;
+        };
         var $BlackBox = $("#BlackBox");
         $BlackBox.append('<div class = "system Inner" id="prompt'+this._getNowID()+
             '"><p>'+text+'</p><input id="boxInput"></div>');
-        this._boxWrap($("#prompt"+this._getNowID()));
+        this._boxWrap($("#prompt"+this._getNowID()),options);
         this._setOverlayAttr.call(this);
         var $thisInput = $("#boxInput").focus(),
             onSubmit = function(){
@@ -228,18 +252,15 @@
         if(this.config.displayClose){
             this._setClose.call(this,onCancel);
         }
-        var _verify = function(){
+        options.verify = function(){
             if((_this.config.allowPromptBlank || $thisInput.val()) &&
                 verify.call(this,$thisInput.val())){
                 return true;
             }
-            $thisInput.addClass("boxError");
-            return false
+            $thisInput.addClass("boxError").focus();
+            return false;
         };
-        $thisInput.focus(function(){
-           $(this).removeClass("boxError");
-        });
-        this._setButton.call(this,onSubmit,onCancel,_verify);
+        this._setButton.call(this,onSubmit,onCancel,options);
     };
 
     /**
@@ -249,8 +270,8 @@
      * @returns {*|jQuery|HTMLElement}
      */
     BlackBox.fn.popup = function(html,_delay_appear){
-        if(arguments.length===0)return $;
-        if (!this._setOverlay.call(this,'popup',arguments,_delay_appear)&&!_delay_appear)return $;
+        if(arguments.length===0)return $W;
+        if (!this._setOverlay.call(this,'popup',arguments,_delay_appear)&&!_delay_appear)return $W;
         var $BlackBox = $("#BlackBox");
         $BlackBox.append('<div class="normal" id="popup'+this._getNowID()+'">'+html+'</div>');
         this._boxWrap($("#popup"+this._getNowID()));
@@ -288,9 +309,10 @@
     /**
      * 对box内容进行包裹并保持居中
      * @param $target
+     * @param options
      * @private
      */
-    BlackBox.fn._boxWrap = function ($target){
+    BlackBox.fn._boxWrap = function ($target,options){
         $target.wrap('<div class="BlackBoxContent" id="'+this._getNowID()+'"></div>');
         var $BlackBoxContent = $("#"+this._getNowID()).fadeTo(0,0).fadeTo(400,1),
             box_width = $BlackBoxContent.width(),
@@ -301,6 +323,9 @@
                     top : ($W.height() - box_height - 80)/2 + 'px'
                 })
             };
+        if(options.title){
+            $BlackBoxContent.prepend('<p class="title">'+options.title+'</div>');
+        }
         $W.resize(resize);
         resize.call(this);
     };
@@ -409,6 +434,10 @@
             return;
         }
         $BBOverlay.click(function(){
+            var $input = $BlackBoxContent.find("input");
+            if($input.length===1){
+                $input.focus();
+            }
             _this.boxShake.call(_this);
         })
     };
@@ -417,10 +446,10 @@
      * 根据传入的参数来添加确定取消按钮
      * @param onSubmit
      * @param onCancel
-     * @param verify
+     * @param options
      * @private
      */
-    BlackBox.fn._setButton = function(onSubmit,onCancel,verify){
+    BlackBox.fn._setButton = function(onSubmit,onCancel,options){
         if(arguments.length===0)return;
         var $BlackBoxContent = $("#"+this._getNowID()),
             _this = this;
@@ -433,9 +462,10 @@
             })
         }
         if(onSubmit){
-            $BlackBoxAction.append('<button class="submit">确定</button>');
+            var button_text = options.value || '确定';
+            $BlackBoxAction.append('<button class="submit">'+button_text+'</button>');
             $BlackBoxAction.find(".submit").click(function(){
-                if(!verify || verify.call(_this)){
+                if(!options.verify || options.verify.call(_this)){
                     _this.boxClose.call(_this,onSubmit);
                 }else{
                     _this.boxShake.call(_this);
