@@ -55,7 +55,7 @@
             'enableKeyPress': true
         };
 
-        if (Object.prototype.toString.call(config) == '[object Object]') {
+        if (config && Object.prototype.toString.call(config) == '[object Object]') {
             var this_config = {};
             jQuery.each(default_config,
                 function(item, value) {
@@ -503,6 +503,5 @@
     };
 
     root.BlackBox = BlackBox;
-    root.__ = new BlackBox();
 
 }).call(window);

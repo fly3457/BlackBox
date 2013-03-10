@@ -7,11 +7,14 @@ html{
 	position: fixed;
 	top:0;
 	left:0;
-	line-height: 140%;
-	font-size: 14px;
     _position: absolute;
     _left:expression(eval(document.documentElement.scrollLeft));
     _top:expression(eval(document.documentElement.scrollTop))
+}
+
+#BlackBox p ,#BlackBox input,#BlackBox button{
+    line-height: 20px;
+    font-size: 14px;
 }
 
 #BBOverlay {
@@ -25,7 +28,7 @@ html{
 
 .BlackBoxContent {
 	z-index: 8050;
-    background:#595757;
+    background:#333333;
     background-color: rgba(0, 0, 0, 0.4);
 	position: absolute;
 	-webkit-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
@@ -84,14 +87,14 @@ html{
 }
 
 .BlackBoxContent button{
-    _height: 35px;
-    _width: 60px;
     border-radius:4px;
     -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
     -moz-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);    display:inline-block;
     color:#fff;
-    padding:0.5em 1em;
+    padding:6px 16px;
+    _height: 36px;
+    _padding:8px 8px;
     margin: 0 3px;
     background:#4297da;
     border: 1px solid #3663a4;

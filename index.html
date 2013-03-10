@@ -9,14 +9,16 @@
     <script type="text/javascript" src="blackbox/js/jquery-1.9.1.min.js"></script>
     <script type="text/javascript" src="blackbox/js/jquery.blackbox.js"></script>
 <script type="text/javascript">
-    
+
+    var __ = new BlackBox();
+
     $(document).ready(function(){
 
         var a = parseInt(10*Math.random()),
                 b = parseInt(10*Math.random());
 
         __.alert("Hello World",{
-            value : '继续',
+            value : '继续开始',
             title : 'welcome to here'
         });
         __.prompt(a+" + "+b+" = ? ",function(data){
