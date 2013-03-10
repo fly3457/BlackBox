@@ -326,7 +326,7 @@
                 })
             };
         if (options.title) {
-            $BlackBoxContent.prepend('<p class="title">' + options.title + '</div>');
+            $BlackBoxContent.prepend('<p class="title">' + options.title + '</p>');
         }
         $W.resize(resize);
         resize.call(this);
