@@ -3,32 +3,36 @@
  * @param item
  */
 BlackBox.fn.ready = function (item) {
-    if(arguments.length===0)return;
-    var funcs = load_array[item];
-    if(funcs){
-        for(var i=0;i<funcs.length;i++){
-            var func = funcs[i];
+    if (arguments.length === 0) return;
+    var func_list = load_array[item];
+    if (func_list) {
+        for (var i = 0; i < func_list.length; i++) {
+            var func = func_list[i];
             func.call(this);
         }
     }
     delete load_array[item];
-    for(var key in load_array){
-        if(load_array.hasOwnProperty(key))return;
+    for (var key in load_array) {
+        if (load_array.hasOwnProperty(key)) return;
     }
-    $("#BlackBoxLoad").fadeTo(400, 0);
-    this._clearOverlay.call(this);
+    var _this = this;
+    $("#BlackBoxLoad").fadeTo(400, 0, function () {
+        $(this).remove();
+        _this._clearOverlay.call(_this);
+    });
 };
 
 /**
  * 强制停止载入队列
+ * @param callback
  */
-BlackBox.fn.loadClear = function(callback){
+BlackBox.fn.loadClear = function (callback) {
     callback = callback || $.noop;
-    for(var key in load_array){
-        if(load_array.hasOwnProperty(key)){
+    for (var key in load_array) {
+        if (load_array.hasOwnProperty(key)) {
             delete load_array[key];
         }
     }
     $("#BlackBoxLoad").fadeTo(400, 0);
-    this._clearOverlay.call(this,callback);
+    this._clearOverlay.call(this, callback);
 };

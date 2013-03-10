@@ -2,51 +2,42 @@
  * Prompt 方法
  * @param text
  * @param callback
- * @param verify 验证用户输入内容，取消返回null
+ * @param options
  * @param _delay_appear
  */
-BlackBox.fn.prompt = function(text,callback,verify,_delay_appear){
-    if(arguments.length===0)return;
-    callback = callback || $.noop;
-    verify = verify || function(){
-        return true
-    };
-    if(arguments.length === 1){
-        Array.prototype.push.call(arguments,callback,verify);
-    }
-    if(arguments.length === 2){
-        Array.prototype.push.call(arguments,verify);
-    }
-    if (!this._setOverlay.call(this,'prompt',arguments,_delay_appear)&&!_delay_appear)return;
+BlackBox.fn.prompt = function (text, callback, options, _delay_appear) {
+    if (arguments.length === 0) return;
+    var args = this._getArgs.apply(this, arguments);
+    if (!this._setOverlay.call(this, 'prompt', arguments, args[3]) && !args[3]) return;
+    var verify = args[2].verify ||
+        function () {
+            return true;
+        };
     var $BlackBox = $("#BlackBox");
-    $BlackBox.append('<div class = "system Inner" id="prompt'+this._getNowID()+
-        '"><p>'+text+'</p><input id="boxInput"></div>');
-    this._boxWrap($("#prompt"+this._getNowID()));
+    $BlackBox.append('<div class = "system Inner" id="prompt' + this._getNowID() + '"><p>' + args[0] + '</p><input id="boxInput"></div>');
+    this._boxWrap($("#prompt" + this._getNowID()), args[2]);
     this._setOverlayAttr.call(this);
     var $thisInput = $("#boxInput").focus(),
-        onSubmit = function(){
-            return callback.call(this,$thisInput.val());
+        onSubmit = function () {
+            return args[1].call(this, $thisInput.val());
         },
-        onCancel = function(){
-            return callback.call(this,null);
+        onCancel = function () {
+            return args[1].call(this, null);
         },
         _this = this;
-    $thisInput.blur(function(){
+    $thisInput.blur(function () {
         $(this).val($.trim($(this).val()));
     });
-    if(this.config.displayClose){
-        this._setClose.call(this,onCancel);
+    if (this.config.displayClose) {
+        this._setClose.call(this, onCancel);
     }
-    var _verify = function(){
-        if((_this.config.allowPromptBlank || $thisInput.val()) &&
-            verify.call(this,$thisInput.val())){
+    args[2].verify = function () {
+        if ((_this.config.allowPromptBlank || $thisInput.val()) &&
+            verify.call(this, $thisInput.val())) {
             return true;
         }
-        $thisInput.addClass("boxError");
-        return false
+        $thisInput.addClass("boxError").focus();
+        return false;
     };
-    $thisInput.focus(function(){
-        $(this).removeClass("boxError");
-    });
-    this._setButton.call(this,onSubmit,onCancel,_verify);
+    this._setButton.call(this, onSubmit, onCancel, args[2]);
 };

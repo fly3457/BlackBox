@@ -10,9 +10,9 @@
  *
  */
 
-(function(){
+(function () {
 
-    var root = this ,
+    var root = this,
     //用于处理同时多个弹出存在
         box_id = 0,
         overlay_list = [],
@@ -22,9 +22,9 @@
     /**
      * @constructor
      */
-    var BlackBox = function(){
+    var BlackBox = function () {
 
-        this.init.apply(this,arguments);
+        this.init.apply(this, arguments);
 
     };
 
@@ -42,7 +42,7 @@
      * enableKeyPress：使用快捷键确定和取消
      * @param {Object} config
      */
-    BlackBox.fn.init = function(config){
+    BlackBox.fn.init = function (config) {
 
         var default_config = {
             'clickOverlayEffect': 'shake',
@@ -55,34 +55,64 @@
             'enableKeyPress': true
         };
 
-        if(Object.prototype.toString.call(config)=='[object Object]'){
+        if (config && Object.prototype.toString.call(config) == '[object Object]') {
             var this_config = {};
-            jQuery.each(default_config,function(item,value){
-                this_config[item] = config[item] || value;
-            });
+            jQuery.each(default_config,
+                function (item, value) {
+                    this_config[item] = config[item] || value;
+                });
             this.config = this_config;
-        }else{
+        } else {
             this.config = default_config;
         }
-        if(this.config.enableKeyPress)this._setKeyShort.call(this);
+        if (this.config.enableKeyPress) this._setKeyShort.call(this);
+    };
+
+    /**
+     * 处理自带功能传入参数返回新的arguments
+     * @param text
+     * @param callback
+     * @param options
+     * @param _delay_appear
+     * @returns {Arguments}
+     * @private
+     */
+    BlackBox.fn._getArgs = function (text, callback, options, _delay_appear) {
+        callback = callback || $.noop;
+        if (!$.isFunction(callback)) {
+            options = callback;
+            callback = $.noop;
+        }
+        options = options || {};
+        if (arguments.length === 1) {
+            Array.prototype.push.call(arguments, callback, options);
+        }
+        if (arguments.length === 2) {
+            Array.prototype.push.call(arguments, options);
+        }
+        return arguments;
     };
 
     /**
      * 对box内容进行包裹并保持居中
      * @param $target
+     * @param options
      * @private
      */
-    BlackBox.fn._boxWrap = function ($target){
-        $target.wrap('<div class="BlackBoxContent" id="'+this._getNowID()+'"></div>');
-        var $BlackBoxContent = $("#"+this._getNowID()).fadeTo(0,0).fadeTo(400,1),
+    BlackBox.fn._boxWrap = function ($target, options) {
+        $target.wrap('<div class="BlackBoxContent" id="' + this._getNowID() + '"></div>');
+        var $BlackBoxContent = $("#" + this._getNowID()).fadeTo(0, 0).fadeTo(400, 1),
             box_width = $BlackBoxContent.width(),
             box_height = $BlackBoxContent.height(),
-            resize = function(){
+            resize = function () {
                 $BlackBoxContent.css({
-                    left : ($W.width() - box_width)/2 + 'px',
-                    top : ($W.height() - box_height - 80)/2 + 'px'
+                    left: ($W.width() - box_width) / 2 + 'px',
+                    top: ($W.height() - box_height - 80) / 2 + 'px'
                 })
             };
+        if (options.title) {
+            $BlackBoxContent.prepend('<p class="title">' + options.title + '</p>');
+        }
         $W.resize(resize);
         resize.call(this);
     };
@@ -91,23 +121,24 @@
      * 设置键盘快捷键
      * @private
      */
-    BlackBox.fn._setKeyShort = function(){
+    BlackBox.fn._setKeyShort = function () {
         var _this = this;
-        $(document).bind('keydown.fb', function(e) {
-            var $BlackBoxContent = $(".BlackBoxContent");
-            if (e.keyCode == 13) {
-                e.preventDefault();
-                $BlackBoxContent.find(".submit").click();
-            } else if (e.keyCode == 27) {
-                e.preventDefault();
-                var button =  $BlackBoxContent.find(".cancel")[0] || $BlackBoxContent.find(".close")[0];
-                if(button){
-                    $(button).click();
-                }else{
-                    _this.boxClose.call(_this);
+        $(document).bind('keydown.fb',
+            function (e) {
+                var $BlackBoxContent = $(".BlackBoxContent");
+                if (e.keyCode == 13) {
+                    e.preventDefault();
+                    $BlackBoxContent.find(".submit").click();
+                } else if (e.keyCode == 27) {
+                    e.preventDefault();
+                    var button = $BlackBoxContent.find(".close")[0] || $BlackBoxContent.find(".cancel")[0] || $BlackBoxContent.find(".submit")[0];
+                    if (button) {
+                        $(button).click();
+                    } else {
+                        _this.boxClose.call(_this);
+                    }
                 }
-            }
-        });
+            });
     };
 
     /**
@@ -115,28 +146,30 @@
      * @returns {boolean}
      * @private
      */
-    BlackBox.fn._setOverlay = function(type,args,delay_appear){
+    BlackBox.fn._setOverlay = function (type, args, delay_appear) {
         box_id += 1;
-        if(!delay_appear){
+        if (!delay_appear) {
             overlay_list.push({
-                id : box_id,
-                type : type,
-                args : args
+                id: box_id,
+                type: type,
+                args: args
             });
         }
-        if(overlay_list.length!==1){
+        if (overlay_list.length !== 1) {
             return false;
         }
-        $("body").append('<div id="BlackBox"><div id="BBOverlay"></div></div>');
+        if (!$("#BlackBox")[0]) {
+            $("body").append('<div id="BlackBox"><div id="BBOverlay"></div></div>');
+        }
         var $BBOverlay = $("#BBOverlay"),
             config = this.config;
-        if(!delay_appear){
+        if (!delay_appear) {
             $BBOverlay.css({
-                background_color:config.overlayColor
-            }).fadeTo(0,0).fadeTo(400,config.overlayOpacity);
+                background_color: config.overlayColor
+            }).fadeTo(0, 0).fadeTo(400, config.overlayOpacity);
         }
-        var resize = function(){
-            $BBOverlay.width($W.width()+"px").height($W.height()+"px");
+        var resize = function () {
+            $BBOverlay.width($W.width() + "px").height($W.height() + "px");
         };
         resize.call(this);
         $W.resize(resize);
@@ -145,27 +178,27 @@
 
     /**
      * 删除遮罩，如果强制删除或者只有一个弹出内容时直接删除dom，否则显示下一个操作
-     * @param force
      * @private
+     * @param force
      * @param callback
      */
-    BlackBox.fn._clearOverlay = function(callback,force){
-        if(force){
+    BlackBox.fn._clearOverlay = function (callback, force) {
+        if (callback) callback.call(this);
+        if (force) {
             overlay_list.length = 0;
-        }else{
+        } else {
             overlay_list.shift();
         }
-        var _this = this;
         $("#BBOverlay").unbind("click");
-        if(overlay_list.length==0){
-            $("#BlackBox").fadeOut(400,function(){
-                $(this).remove();
-                if (callback)callback.call(_this);
-            });
-        }else{
-            if (callback)callback.call(this);
-            Array.prototype.push.call(overlay_list[0].args,true);
-            this[overlay_list[0].type].apply(this,overlay_list[0].args);
+        if (overlay_list.length == 0) {
+            $("#BlackBox").fadeOut(400,
+                function () {
+                    $(this).remove();
+                });
+        } else {
+            //执行队列中下一个内容
+            Array.prototype.push.call(overlay_list[0].args, true);
+            this[overlay_list[0].type].apply(this, overlay_list[0].args);
         }
     };
 
@@ -173,24 +206,27 @@
      * 根据config内容设置遮罩点击效果
      * @private
      */
-    BlackBox.fn._setOverlayAttr = function(){
+    BlackBox.fn._setOverlayAttr = function () {
         var click_effect = this.config.clickOverlayEffect,
-            $BlackBoxContent = $("#"+this._getNowID()),
+            $BlackBoxContent = $("#" + this._getNowID()),
             $BBOverlay = $("#BBOverlay"),
             _this = this;
-        if(click_effect==='close'){
-            $BBOverlay.click(function(){
-                var button = $BlackBoxContent.find(".close")[0] ||
-                    $BlackBoxContent.find(".cancel")[0] || $BlackBoxContent.find(".submit")[0];
-                if(button){
+        if (click_effect === 'close') {
+            $BBOverlay.click(function () {
+                var button = $BlackBoxContent.find(".close")[0] || $BlackBoxContent.find(".cancel")[0] || $BlackBoxContent.find(".submit")[0];
+                if (button) {
                     $(button).click();
-                }else{
+                } else {
                     _this.boxClose.call(_this);
                 }
             });
             return;
         }
-        $BBOverlay.click(function(){
+        $BBOverlay.click(function () {
+            var $input = $BlackBoxContent.find("input");
+            if ($input.length === 1) {
+                $input.focus();
+            }
             _this.boxShake.call(_this);
         })
     };
@@ -199,27 +235,28 @@
      * 根据传入的参数来添加确定取消按钮
      * @param onSubmit
      * @param onCancel
-     * @param verify
+     * @param options
      * @private
      */
-    BlackBox.fn._setButton = function(onSubmit,onCancel,verify){
-        if(arguments.length===0)return;
-        var $BlackBoxContent = $("#"+this._getNowID()),
+    BlackBox.fn._setButton = function (onSubmit, onCancel, options) {
+        if (arguments.length === 0) return;
+        var $BlackBoxContent = $("#" + this._getNowID()),
             _this = this;
         $BlackBoxContent.find(".Inner").append('<div id="BlackBoxAction"></div>');
         var $BlackBoxAction = $("#BlackBoxAction");
-        if(onCancel){
+        if (onCancel) {
             $BlackBoxAction.append('<button class="cancel">取消</button>');
-            $BlackBoxAction.find(".cancel").click(function(){
-                _this.boxClose.call(_this,onCancel);
+            $BlackBoxAction.find(".cancel").click(function () {
+                _this.boxClose.call(_this, onCancel);
             })
         }
-        if(onSubmit){
-            $BlackBoxAction.append('<button class="submit">确定</button>');
-            $BlackBoxAction.find(".submit").click(function(){
-                if(!verify || verify.call(_this)){
-                    _this.boxClose.call(_this,onSubmit);
-                }else{
+        if (onSubmit) {
+            var button_text = options.value || '确定';
+            $BlackBoxAction.append('<button class="submit">' + button_text + '</button>');
+            $BlackBoxAction.find(".submit").click(function () {
+                if (!options.verify || options.verify.call(_this)) {
+                    _this.boxClose.call(_this, onSubmit);
+                } else {
                     _this.boxShake.call(_this);
                 }
             })
@@ -231,12 +268,12 @@
      * @param onCancel
      * @private
      */
-    BlackBox.fn._setClose = function(onCancel){
-        var $BlackBoxContent = $("#"+this._getNowID()),
+    BlackBox.fn._setClose = function (onCancel) {
+        var $BlackBoxContent = $("#" + this._getNowID()),
             _this = this;
         $BlackBoxContent.append('<div class="close">Close</div>');
-        $BlackBoxContent.find(".close").click(function(){
-            _this.boxClose.call(_this,onCancel);
+        $BlackBoxContent.find(".close").click(function () {
+            _this.boxClose.call(_this, onCancel);
         })
     };
 
@@ -245,12 +282,11 @@
      * @returns {string}
      * @private
      */
-    BlackBox.fn._getNowID = function(){
+    BlackBox.fn._getNowID = function () {
         var id = overlay_list[0].id;
-        return "_box_"+id;
+        return "_box_" + id;
     };
 
     root.BlackBox = BlackBox;
-    root.__ = new BlackBox();
 
 }).call(window);
