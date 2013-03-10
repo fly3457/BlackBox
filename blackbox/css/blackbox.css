@@ -1,12 +1,12 @@
 html{
-	background: url(about:black) no-repeat fixed;
+    background: url(about:black) no-repeat fixed;
 }
 
 #BlackBox {
-	z-index: 8000;
-	position: fixed;
-	top:0;
-	left:0;
+    z-index: 8000;
+    position: fixed;
+    top:0;
+    left:0;
     _position: absolute;
     _left:expression(eval(document.documentElement.scrollLeft));
     _top:expression(eval(document.documentElement.scrollTop))
@@ -18,24 +18,23 @@ html{
 }
 
 #BBOverlay {
-	position:absolute;	
-	top:0;
-	left:0;
-	background:black url("../images/fullbody.png") repeat;
-	z-index: -1;
-	_z-index: 7000;
+    position:absolute;
+    top:0;
+    left:0;
+    background:black url("../images/fullbody.png") repeat;
+    z-index: -1;
+    _z-index: 7000;
 }
 
+
 .BlackBoxContent {
-	z-index: 8050;
+    z-index: 8050;
     background-color: rgba(0, 0, 0, 0.4);
-    *background-color: #999999;
-    -ms-filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#66000000,endColorstr=#66000000);
-    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#66000000,endColorstr=#66000000);
+    background: #666666\9;
     position: absolute;
-	-webkit-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
-	-moz-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5); 
-	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+    -webkit-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+    -moz-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
     -webkit-border-radius: 2px;
     -moz-border-radius: 2px;
     border-radius: 2px;
@@ -60,11 +59,11 @@ html{
 }
 
 .BlackBoxContent .Inner ,.BlackBoxContent .normal {
-	background: #f9f9f9;
-	-webkit-border-radius: 2px;
-	-moz-border-radius: 2px;
-	border-radius:2px;
-	border: 1px solid #727171;
+    background: #f9f9f9;
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    border-radius:2px;
+    border: 1px solid #727171;
 }
 
 .BlackBoxContent .Inner p {
