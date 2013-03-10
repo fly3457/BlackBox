@@ -68,7 +68,6 @@
         if (this.config.enableKeyPress) this._setKeyShort.call(this);
     };
 
-    //TODO 队列处理有问题，最终导致dom删除不完全。需要把握好时间。
     /**
      * 载入内容
      * @param item 载入内容
@@ -83,9 +82,9 @@
                 load_array[item].push(callback);
             }
             load_array[item] = [callback];
-        }
-        for (var key in load_array) {
-            if (key !== item) return;
+            for (var key in load_array) {
+                if (key !== item) return;
+            }
         }
         if (arguments.length === 1) {
             Array.prototype.push.call(arguments, callback);
@@ -120,12 +119,16 @@
         for (var key in load_array) {
             if (load_array.hasOwnProperty(key)) return;
         }
-        $("#BlackBoxLoad").fadeTo(400, 0);
-        this._clearOverlay.call(this);
+        var _this = this;
+        $("#BlackBoxLoad").fadeTo(400, 0, function(){
+            $(this).remove();
+            _this._clearOverlay.call(_this);
+        });
     };
 
     /**
      * 强制停止载入队列
+     * @param callback
      */
     BlackBox.fn.loadClear = function(callback) {
         callback = callback || $.noop;
@@ -220,7 +223,8 @@
             this._setClose.call(this, onCancel);
         }
         args[2].verify = function() {
-            if ((_this.config.allowPromptBlank || $thisInput.val()) && verify.call(this, $thisInput.val())) {
+            if ((_this.config.allowPromptBlank || $thisInput.val()) &&
+                verify.call(this, $thisInput.val())) {
                 return true;
             }
             $thisInput.addClass("boxError").focus();
@@ -369,7 +373,9 @@
         if (overlay_list.length !== 1) {
             return false;
         }
-        $("body").append('<div id="BlackBox"><div id="BBOverlay"></div></div>');
+        if(!$("#BlackBox")[0]){
+            $("body").append('<div id="BlackBox"><div id="BBOverlay"></div></div>');
+        }
         var $BBOverlay = $("#BBOverlay"),
             config = this.config;
         if (!delay_appear) {
@@ -387,26 +393,25 @@
 
     /**
      * 删除遮罩，如果强制删除或者只有一个弹出内容时直接删除dom，否则显示下一个操作
-     * @param force
      * @private
+     * @param force
      * @param callback
      */
-    BlackBox.fn._clearOverlay = function(callback, force) {
+    BlackBox.fn._clearOverlay = function(callback,force) {
+        if (callback) callback.call(this);
         if (force) {
             overlay_list.length = 0;
         } else {
             overlay_list.shift();
         }
-        var _this = this;
         $("#BBOverlay").unbind("click");
         if (overlay_list.length == 0) {
             $("#BlackBox").fadeOut(400,
                 function() {
                     $(this).remove();
-                    if (callback) callback.call(_this);
                 });
         } else {
-            if (callback) callback.call(this);
+            //执行队列中下一个内容
             Array.prototype.push.call(overlay_list[0].args, true);
             this[overlay_list[0].type].apply(this, overlay_list[0].args);
         }
