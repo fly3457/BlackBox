@@ -3,70 +3,204 @@
 <html>
 <head>
     <title>BlackBox - A simple jQuery notification plugin</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <link rel="stylesheet" type="text/css" href="static/style.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="blackbox/css/blackbox.css" media="screen" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link rel="stylesheet" type="text/css" href="static/css/rest.css" media="screen"/>
+    <link rel="stylesheet" type="text/css" href="static/css/style.css" media="screen"/>
+    <link rel="stylesheet" type="text/css" href="static/css/heightlight.css" media="screen"/>
+    <link rel="stylesheet" type="text/css" href="blackbox/css/blackbox.css" media="screen"/>
     <script type="text/javascript" src="blackbox/js/jquery-1.9.1.min.js"></script>
-    <script type="text/javascript" src="blackbox/js/jquery.blackbox.js"></script>
-<script type="text/javascript">
-
-    var __ = new BlackBox();
-
-    $(document).ready(function(){
-
-        var a = parseInt(10*Math.random()),
-                b = parseInt(10*Math.random());
-
-        __.alert("Hello World",{
-            value : '继续开始',
-            title : 'welcome to here'
-        });
-        __.prompt(a+" + "+b+" = ? ",function(data){
-
-            if(data){
-
-                __.alert("回答正确!",function(){
-                    __.load("index");
-                    __.alert("现在来看看载入的功能～",function(){
-                        var $body = $("body");
-                        for(var i=0;i<10;i++){
-                            (function(i){
-                                var name = "test_"+i;
-                                __.load(name,function(){
-                                    $body.append('<p>'+name+'载入完成</p>');
-                                });
-                                setTimeout(function(){
-                                    __.ready(name);
-                                },1000*i);
-                            }).call(this,i);
-                        }
-                        __.confirm("全部载入完成，是否载入项目主页",function(data){
-                            if(data){
-                                location.href = 'https://github.com/vincenting/Blackbox';
-                            }else{
-                                location.reload();
-                            }
-                        })
-                    });
-                    setTimeout(function(){
-                        __.ready("index");
-                    },1000)
-                });
-
-            }else{
-                __.alert("你居然连这个都不会。。")
-            }
-        },{
-            verify : function(data){
-                return(data==a+b);
-            }
-        })
-
-    });
-    
-</script>
 </head>
 <body>
+<div id="wrap">
+    <div id="header">
+        <div id="logo">
+            BlackBox - A simple jQuery notification plugin
+        </div>
+    </div>
+    <div id="content">
+        <div id="intro">
+            <p>
+                BlackBox 是一款基于 jQuery 的 dialog 插件。其中自带的方法有 <a href="#alert"><strong>alert</strong></a> ,
+                <a href="#confirm"><strong>confirm</strong></a> , <a href="#prompt"><strong>prompt</strong></a> ,
+                <a href="#load"><strong>load</strong></a> 和 <a href="#load"><strong>ready</strong></a>
+                ,以及易于扩展的 <a href="#popup"><strong>popUp</strong></a> , <a href="#popup"><strong>boxClose</strong></a>
+                和 <a href="#popup"><strong>boxShake</strong></a> 方法。
+            </p>
 
+            <p>
+                项目代码托管在 <a href="https://github.com/vincenting/BlackBox/"><strong>Github</strong></a>
+                ,兼容主流浏览器包括火狐、谷歌浏览器、Safari、Opera、
+                IE6+。同时模拟了浏览器原生 dialog 的多数功能 - dialog 间的阻塞、键盘快捷键等等。
+            </p>
+        </div>
+
+        <h2 id="start">
+            开始
+        </h2>
+
+        <p>
+            1.引用项目文件
+        </p>
+        <pre><code class="html">
+    &lt;link rel="stylesheet" type="text/css" href="blackbox/css/blackbox.css" media="screen"/&gt;
+    &lt;script type="text/javascript" src="blackbox/js/jquery.blackbox.min.js"&gt;&lt;/script&gt;
+        </code></pre>
+        <p>
+            2.实例化
+        </p>
+        <pre><code class="javascript">
+    var box = new BlackBox();
+        </code></pre>
+
+        <h2 id="alert">
+            alert 功能
+        </h2>
+        <p>
+            .add( dialog正文 [,关闭dialog时执行的函数] [,参数设置] )，除dialog正文外其他两个任意可以省略，可选参数为
+            title 和 value。
+        </p>
+        <button class="preview" id="alert_preview">预览</button>
+        <pre><code class="javascript">
+    box.alert("这里是一个 alert 的 demo ", function () {
+        alert("窗口即将自己关闭")
+    }, {
+        title: '这里是标题',
+        value: '自定义按钮内容'
+    })
+        </code></pre>
+
+        <h2 id="confirm">
+            confirm 功能
+        </h2>
+        <p>
+            .confirm( dialog正文 [,关闭或者确定dialog时执行的函数] [,参数设置] )，除dialog正文外其他两个任意可以省略，
+            用户确定时callback的参数为true，关闭或者取消时为false，可选参数为 title 和 value。
+        </p>
+        <button class="preview" id="confirm_preview">预览</button>
+        <pre><code class="javascript">
+    box.confirm("这里是一个 confirm 的 demo", function (data) {
+        if (data) {
+            box.alert("你点击了确定")
+        } else {
+            box.alert("你点击了取消")
+        }
+    }, {
+        title: '这里是标题',
+        value: '自定义按钮内容'
+    })
+        </code></pre>
+
+        <h2 id="prompt">
+            prompt 功能
+        </h2>
+        <p>
+            .prompt( dialog正文 [,关闭或者确定dialog时执行的函数] [,参数设置] )，除dialog正文外其他两个任意可以省略，
+            用户输入完成后确认时callback的参数为用户输入的内容，关闭或者取消时为null，可选参数为 title 、 value
+            和 verify，其中 verify 为用户输入简单验证函数(暂时不支持异步)，参数为 data ，返回true 或者 false。
+        </p>
+        <button class="preview" id="prompt_preview">预览</button>
+        <pre><code class="javascript">
+    box.prompt("请输入一个大于 10 的数字", function (data) {
+        if (data) {
+            box.alert("你刚刚输入了" + data)
+        } else {
+            box.alert("你放弃了输入")
+        }
+    }, {
+        title: '这里是标题',
+        value: '自定义按钮内容',
+        verify: function (data) {
+            return data > 10;
+        }
+    })
+        </code></pre>
+
+        <h2 id="load">
+            load 和 ready 功能
+        </h2>
+        <p>
+            .load( 此时载入内容的标签 [,ready时执行的函数] )，不同时间可以使用相同的载入内容的标签，此时 ready 时
+            执行的函数不会叠加，而是会按照先后顺序执行。<strong> ready 必须在 load 之后！</strong>
+        </p>
+        <p>
+            .load( 此时载入完成内容的标签 )，只有所有的内容都载入完了，屏幕上的遮罩才会消失。
+        </p>
+        <button class="preview" id="load_preview">预览</button>
+        <pre><code class="javascript">
+    box.load("index", function () {
+        console.log("第一个index载入内容载入完毕")
+    });
+    box.load("index", function () {
+        console.log("第二个index载入内容载入完毕")
+    });
+    box.load("main", function () {
+        console.log("main载入内容载入完毕")
+    });
+    setTimeout(function () {
+        box.ready("main");
+    }, 1000);
+    setTimeout(function () {
+        box.ready("index")
+    }, 2000);
+        </code></pre>
+
+        <h2 id="popup">
+            popUp , boxClose 和 boxShake  功能
+        </h2>
+        <p>还在完善中的功能，.popUp( html内容 )，.boxClose 关闭当前dialog ，boxShake 为使当前dialog抖动。</p>
+        <button class="preview" id="popup_preview">预览</button>
+        <pre><code class="javascript">
+    var $content = box.popup('&lt;div class="popup_demo"&gt;' +
+        '&lt;button id="shake_demo"&gt;抖一抖&lt;/button&gt;&lt;button id="close_demo"&gt;关闭&lt;/button&gt;&lt;/div&gt;');
+    $content.find("#shake_demo").click(function () {
+        box.boxShake();
+    });
+    $content.find("#close_demo").click(function () {
+        box.boxClose();
+    });
+        </code></pre>
+
+        <h2>内置方法执行顺序</h2>
+        <p>内置方法通过队列的方式实现了严格按照执行先后顺序来出现。后执行的代码将在之前窗口关闭后实现</p>
+        <button class="preview" id="list_preview">预览</button>
+        <pre><code class="javascript">
+    box.alert("Hello word");
+    box.load("index", function () {
+        console.log("index 已经完成了");
+        box.alert("之前的 index 已经完成了");//这里的alert是在最后执行的！
+    });
+    setTimeout(function () {
+        box.ready("index");
+    }, 2000);
+    box.confirm("Bye word", {
+        title: "再见世界",
+        value: "再见"
+    });
+        </code></pre>
+        <p>
+            tip:这里如果第一个 alert 没有很快关掉是不会出现后面的 load 效果，因为当 load 还在队列中的时候就以及
+            载入完成了，load 的完成函数会在载入时被完成, load 事件从队列中被消失。
+        </p>
+
+        <h2>实例化参数</h2>
+        <pre><code class="javascript">
+var box = new BlackBox({
+    'clickOverlayEffect': 'shake', //点击覆盖层效果，默认为抖动 'shake'，可选关闭 'close'
+    'overlayColor': '#000', //覆盖层颜色，默认为黑色 #000
+    'overlayOpacity': .6, //覆盖层透明度，默认为 .6
+    'allowPromptBlank': false, //允许prompt时输入内容为空，默认否，即为空时提交会抖动
+    'displayClose': false, //在alert,confirm和prompt模式中显示关闭按钮
+    'enableKeyPress': true //使用快捷键确定和取消
+})
+        </code></pre>
+
+    </div>
+    <div id="footer">
+        @author : <a href="http://vincenting.com">Vincent Ting</a>
+    </div>
+</div>
 </body>
 </html>
+<script type="text/javascript" src="blackbox/js/jquery.blackbox.min.js"></script>
+<script type="text/javascript" src="static/js/demo.js"></script>
+<script type="text/javascript" src="static/js/heightlight.js"></script>

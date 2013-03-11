@@ -1,6 +1,6 @@
 /*
  * BlackBox - jQuery Plugin
- * version: 0.9 (8/03/2013)
+ * version: 1.0 (11/03/2013)
  * @requires jQuery v1.4 or later
  *
  *
@@ -35,10 +35,8 @@
      * clickOverlayEffect: 点击覆盖层效果，默认为抖动 'shake'，可选关闭 'close'
      * overlayColor : 覆盖层颜色，默认为黑色 #000
      * overlayOpacity : 覆盖层透明度，默认为 .6
-     * forceLoad ：载入 iframe 时等待内容载入才显示出来
      * allowPromptBlank ：允许prompt时输入内容为空，默认否，即为空时提交会抖动
-     * allowBoxScrolling ：在inline和iframe模式时超出部分使用scroll显示，否则隐藏超出部分
-     * displayClose：在alert和prompt模式中显示关闭按钮
+     * displayClose：在alert,confirm和prompt模式中显示关闭按钮
      * enableKeyPress：使用快捷键确定和取消
      * @param {Object} config
      */
@@ -48,9 +46,7 @@
             'clickOverlayEffect': 'shake',
             'overlayColor': '#000',
             'overlayOpacity': .6,
-            'forceLoad': true,
             'allowPromptBlank': false,
-            'allowBoxScrolling': true,
             'displayClose': false,
             'enableKeyPress': true
         };
@@ -65,7 +61,7 @@
         } else {
             this.config = default_config;
         }
-        if (this.config.enableKeyPress) this._setKeyShort.call(this);
+        if (this.config.enableKeyPress) _setKeyShort.call(this);
     };
 
     /**
@@ -80,16 +76,28 @@
         if (!_delay_appear) {
             if (Object.prototype.toString.call(load_array[item]) == '[object Array]') {
                 load_array[item].push(callback);
+                return;
             }
             load_array[item] = [callback];
             for (var key in load_array) {
                 if (key !== item) return;
             }
+        } else {
+            //延时出现时如果标签为空，说明ready在之前已经执行完毕，不出现任何内容，直接_clearOverlay
+            if ((function () {
+                for (var key in load_array) {
+                    if (load_array.hasOwnProperty(key)) return false;
+                }
+                return true;
+            })()) {
+                _clearOverlay.call(this);
+                return;
+            }
         }
         if (arguments.length === 1) {
             Array.prototype.push.call(arguments, callback);
         }
-        if (!this._setOverlay.call(this, 'load', arguments, _delay_appear) && !_delay_appear) return;
+        if (!_setOverlay.call(this, 'load', arguments, _delay_appear) && !_delay_appear) return;
         $("#BlackBox").append('<div id="BlackBoxLoad">载入中</div>');
         var $BoxLoad = $("#BlackBoxLoad").fadeTo(0, 0).fadeTo(400, 1),
             resize = function () {
@@ -119,10 +127,11 @@
         for (var key in load_array) {
             if (load_array.hasOwnProperty(key)) return;
         }
+        if (overlay_list[0].type !== "load")return;
         var _this = this;
         $("#BlackBoxLoad").fadeTo(400, 0, function () {
             $(this).remove();
-            _this._clearOverlay.call(_this);
+            _clearOverlay.call(_this);
         });
     };
 
@@ -138,7 +147,7 @@
             }
         }
         $("#BlackBoxLoad").fadeTo(400, 0);
-        this._clearOverlay.call(this, callback);
+        _clearOverlay.call(this, callback);
     };
 
     /**
@@ -150,16 +159,16 @@
      */
     BlackBox.fn.alert = function (text, callback, options, _delay_appear) {
         if (arguments.length === 0) return;
-        var args = this._getArgs.apply(this, arguments);
-        if (!this._setOverlay.call(this, 'alert', args, args[3]) && !args[3]) return;
+        var args = _getArgs.apply(this, arguments);
+        if (!_setOverlay.call(this, 'alert', args, args[3]) && !args[3]) return;
         var $BlackBox = $("#BlackBox");
-        $BlackBox.append('<div class = "system Inner" id="alert' + this._getNowID() + '"><p>' + args[0] + '</p></div>');
-        this._boxWrap($("#alert" + this._getNowID()), args[2]);
-        this._setOverlayAttr.call(this);
+        $BlackBox.append('<div class = "system Inner" id="alert' + _getNowID.call(this) + '"><p>' + args[0] + '</p></div>');
+        _boxWrap.call(this, $("#alert" + _getNowID.call(this)), args[2]);
+        _setOverlayAttr.call(this);
         if (this.config.displayClose) {
-            this._setClose.call(this, args[1]);
+            _setClose.call(this, args[1]);
         }
-        this._setButton.call(this, args[1], null, args[2]);
+        _setButton.call(this, args[1], null, args[2]);
     };
 
     /**
@@ -171,12 +180,12 @@
      */
     BlackBox.fn.confirm = function (text, callback, options, _delay_appear) {
         if (arguments.length === 0) return;
-        var args = this._getArgs.apply(this, arguments);
-        if (!this._setOverlay.call(this, 'confirm', args, args[3]) && !args[3]) return;
+        var args = _getArgs.apply(this, arguments);
+        if (!_setOverlay.call(this, 'confirm', args, args[3]) && !args[3]) return;
         var $BlackBox = $("#BlackBox");
-        $BlackBox.append('<div class = "system Inner" id="confirm' + this._getNowID() + '"><p>' + args[0] + '</p></div>');
-        this._boxWrap($("#confirm" + this._getNowID()), args[2]);
-        this._setOverlayAttr.call(this);
+        $BlackBox.append('<div class = "system Inner" id="confirm' + _getNowID.call(this) + '"><p>' + args[0] + '</p></div>');
+        _boxWrap.call(this, $("#confirm" + _getNowID.call(this)), args[2]);
+        _setOverlayAttr.call(this);
         var onSubmit = function () {
                 return args[1].call(this, true);
             },
@@ -184,9 +193,9 @@
                 return args[1].call(this, false);
             };
         if (this.config.displayClose) {
-            this._setClose.call(this, onCancel);
+            _setClose.call(this, onCancel);
         }
-        this._setButton.call(this, onSubmit, onCancel, args[2]);
+        _setButton.call(this, onSubmit, onCancel, args[2]);
     };
 
     /**
@@ -198,16 +207,16 @@
      */
     BlackBox.fn.prompt = function (text, callback, options, _delay_appear) {
         if (arguments.length === 0) return;
-        var args = this._getArgs.apply(this, arguments);
-        if (!this._setOverlay.call(this, 'prompt', arguments, args[3]) && !args[3]) return;
+        var args = _getArgs.apply(this, arguments);
+        if (!_setOverlay.call(this, 'prompt', arguments, args[3]) && !args[3]) return;
         var verify = args[2].verify ||
             function () {
                 return true;
             };
         var $BlackBox = $("#BlackBox");
-        $BlackBox.append('<div class = "system Inner" id="prompt' + this._getNowID() + '"><p>' + args[0] + '</p><input id="boxInput"></div>');
-        this._boxWrap($("#prompt" + this._getNowID()), args[2]);
-        this._setOverlayAttr.call(this);
+        $BlackBox.append('<div class = "system Inner" id="prompt' + _getNowID.call(this) + '"><p>' + args[0] + '</p><input id="boxInput"></div>');
+        _boxWrap.call(this, $("#prompt" + _getNowID.call(this)), args[2]);
+        _setOverlayAttr.call(this);
         var $thisInput = $("#boxInput").focus(),
             onSubmit = function () {
                 return args[1].call(this, $thisInput.val());
@@ -220,7 +229,7 @@
             $(this).val($.trim($(this).val()));
         });
         if (this.config.displayClose) {
-            this._setClose.call(this, onCancel);
+            _setClose.call(this, onCancel);
         }
         args[2].verify = function () {
             if ((_this.config.allowPromptBlank || $thisInput.val()) &&
@@ -230,7 +239,7 @@
             $thisInput.addClass("boxError").focus();
             return false;
         };
-        this._setButton.call(this, onSubmit, onCancel, args[2]);
+        _setButton.call(this, onSubmit, onCancel, args[2]);
     };
 
     /**
@@ -241,11 +250,11 @@
      */
     BlackBox.fn.popup = function (html, _delay_appear) {
         if (arguments.length === 0) return $W;
-        if (!this._setOverlay.call(this, 'popup', arguments, _delay_appear) && !_delay_appear) return $W;
+        if (!_setOverlay.call(this, 'popup', arguments, _delay_appear) && !_delay_appear) return $W;
         var $BlackBox = $("#BlackBox");
-        $BlackBox.append('<div class="normal" id="popup' + this._getNowID() + '">' + html + '</div>');
-        this._boxWrap($("#popup" + this._getNowID()));
-        this._setOverlayAttr.call(this);
+        $BlackBox.append('<div class="normal" id="popup' + _getNowID.call(this) + '">' + html + '</div>');
+        _boxWrap.call(this, $("#popup" + _getNowID.call(this)), {});
+        _setOverlayAttr.call(this);
         return $BlackBox;
     };
 
@@ -254,13 +263,13 @@
      * @param callback
      */
     BlackBox.fn.boxClose = function (callback) {
-        var $BlackBoxContent = $("#" + this._getNowID()),
+        var $BlackBoxContent = $("#" + _getNowID.call(this)),
             _this = this;
         if (!$BlackBoxContent[0]) return;
         $BlackBoxContent.fadeOut(400,
             function () {
                 $(this).remove();
-                _this._clearOverlay.call(_this, callback);
+                _clearOverlay.call(_this, callback);
             });
     };
 
@@ -268,7 +277,7 @@
      * 抖动盒子
      */
     BlackBox.fn.boxShake = function () {
-        var $BlackBoxContent = $("#" + this._getNowID());
+        var $BlackBoxContent = $("#" + _getNowID.call(this));
         if (!$BlackBoxContent[0]) return;
         var box_left = $BlackBoxContent.offset().left;
         for (var i = 1; 4 >= i; i++) {
@@ -292,7 +301,7 @@
      * @returns {Arguments}
      * @private
      */
-    BlackBox.fn._getArgs = function (text, callback, options, _delay_appear) {
+    var _getArgs = function (text, callback, options, _delay_appear) {
         callback = callback || $.noop;
         if (!$.isFunction(callback)) {
             options = callback;
@@ -314,9 +323,9 @@
      * @param options
      * @private
      */
-    BlackBox.fn._boxWrap = function ($target, options) {
-        $target.wrap('<div class="BlackBoxContent" id="' + this._getNowID() + '"></div>');
-        var $BlackBoxContent = $("#" + this._getNowID()).fadeTo(0, 0).fadeTo(400, 1),
+    var _boxWrap = function ($target, options) {
+        $target.wrap('<div class="BlackBoxContent" id="' + _getNowID.call(this) + '"></div>');
+        var $BlackBoxContent = $("#" + _getNowID.call(this)).fadeTo(0, 0).fadeTo(400, 1),
             box_width = $BlackBoxContent.width(),
             box_height = $BlackBoxContent.height(),
             resize = function () {
@@ -336,7 +345,7 @@
      * 设置键盘快捷键
      * @private
      */
-    BlackBox.fn._setKeyShort = function () {
+    var _setKeyShort = function () {
         var _this = this;
         $(document).bind('keydown.fb',
             function (e) {
@@ -361,7 +370,7 @@
      * @returns {boolean}
      * @private
      */
-    BlackBox.fn._setOverlay = function (type, args, delay_appear) {
+    var _setOverlay = function (type, args, delay_appear) {
         box_id += 1;
         if (!delay_appear) {
             overlay_list.push({
@@ -397,7 +406,7 @@
      * @param force
      * @param callback
      */
-    BlackBox.fn._clearOverlay = function (callback, force) {
+    var _clearOverlay = function (callback, force) {
         if (callback) callback.call(this);
         if (force) {
             overlay_list.length = 0;
@@ -406,7 +415,9 @@
         }
         $("#BBOverlay").unbind("click");
         if (overlay_list.length == 0) {
-            $("#BlackBox").fadeOut(400,
+            var $BlackBox = $("#BlackBox");
+            if (!$BlackBox[0]) return;
+            $BlackBox.fadeOut(400,
                 function () {
                     $(this).remove();
                 });
@@ -421,9 +432,9 @@
      * 根据config内容设置遮罩点击效果
      * @private
      */
-    BlackBox.fn._setOverlayAttr = function () {
+    var _setOverlayAttr = function () {
         var click_effect = this.config.clickOverlayEffect,
-            $BlackBoxContent = $("#" + this._getNowID()),
+            $BlackBoxContent = $("#" + _getNowID.call(this)),
             $BBOverlay = $("#BBOverlay"),
             _this = this;
         if (click_effect === 'close') {
@@ -453,9 +464,9 @@
      * @param options
      * @private
      */
-    BlackBox.fn._setButton = function (onSubmit, onCancel, options) {
+    var _setButton = function (onSubmit, onCancel, options) {
         if (arguments.length === 0) return;
-        var $BlackBoxContent = $("#" + this._getNowID()),
+        var $BlackBoxContent = $("#" + _getNowID.call(this)),
             _this = this;
         $BlackBoxContent.find(".Inner").append('<div id="BlackBoxAction"></div>');
         var $BlackBoxAction = $("#BlackBoxAction");
@@ -483,8 +494,8 @@
      * @param onCancel
      * @private
      */
-    BlackBox.fn._setClose = function (onCancel) {
-        var $BlackBoxContent = $("#" + this._getNowID()),
+    var _setClose = function (onCancel) {
+        var $BlackBoxContent = $("#" + _getNowID.call(this)),
             _this = this;
         $BlackBoxContent.append('<div class="close">Close</div>');
         $BlackBoxContent.find(".close").click(function () {
@@ -497,7 +508,7 @@
      * @returns {string}
      * @private
      */
-    BlackBox.fn._getNowID = function () {
+    var _getNowID = function () {
         var id = overlay_list[0].id;
         return "_box_" + id;
     };
