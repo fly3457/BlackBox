@@ -61,7 +61,7 @@ h2 {
     opacity: 0.9;
 }
 
-.preview:active.button:active {
+.preview:active, .button:active {
     -webkit-box-shadow: 0 0 6px 0 rgba(0, 0, 0, 0.4) inset;
     -moz-box-box-shadow: 0 0 6px 0 rgba(0, 0, 0, 0.4) inset;
     box-shadow: 0 0 6px 0 rgba(0, 0, 0, 0.4) inset;

@@ -350,6 +350,7 @@
         $(document).bind('keydown.fb',
             function (e) {
                 var $BlackBoxContent = $(".BlackBoxContent");
+                if (!$BlackBoxContent[0])return true;
                 if (e.keyCode == 13) {
                     e.preventDefault();
                     $BlackBoxContent.find(".submit").click();
@@ -362,6 +363,7 @@
                         _this.boxClose.call(_this);
                     }
                 }
+                return false;
             });
     };
 
