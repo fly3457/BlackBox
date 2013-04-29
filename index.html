@@ -8,8 +8,7 @@
     <link rel="stylesheet" type="text/css" href="static/css/style.css" media="screen"/>
     <link rel="stylesheet" type="text/css" href="static/css/highlight.css" media="screen"/>
     <link rel="stylesheet" type="text/css" href="blackbox/css/blackbox.css" media="screen"/>
-    <script type="text/javascript" src="blackbox/js/jquery-1.9.1.min.js"></script>
-</head>
+    <script type="text/javascript" src="blackbox/add-on/jquery-1.9.1.min.js"></script>
 <body>
 <div id="wrap">
     <div id="header">
@@ -35,7 +34,7 @@
 
             <p>
                 <a href="https://github.com/vincenting/BlackBox/archive/master.zip" class="button">下载最新版本</a>
-                V1.0
+                V1.2
             </p>
 
         </div>
@@ -156,14 +155,16 @@
         <p>还在完善中的功能，.popUp( html内容 )，.boxClose 关闭当前dialog ，boxShake 为使当前dialog抖动。</p>
         <button class="preview" id="popup_preview">预览</button>
         <pre><code class="javascript">
-    var $content = box.popup('&lt;div class="popup_demo"&gt;' +
-        '&lt;button id="shake_demo"&gt;抖一抖&lt;/button&gt;&lt;button id="close_demo"&gt;关闭&lt;/button&gt;&lt;/div&gt;');
-    $content.find("#shake_demo").click(function () {
-        box.boxShake();
-    });
-    $content.find("#close_demo").click(function () {
-        box.boxClose();
-    });
+    box.popup('&lt;div class="popup_demo"&gt;' +
+        '&lt;button id="shake_demo"&gt;抖一抖&lt;/button&gt;&lt;button id="close_demo"&gt;关闭&lt;/button&gt;&lt;/div&gt;',
+        function (content) {
+            content.find("#shake_demo").click(function () {
+                box.boxShake();
+            });
+            content.find("#close_demo").click(function () {
+                box.boxClose();
+            });
+       });
         </code></pre>
 
         <h2>内置方法执行顺序</h2>
@@ -190,14 +191,14 @@
 
         <h2>实例化参数</h2>
         <pre><code class="javascript">
-var box = new BlackBox({
-    'clickOverlayEffect': 'shake', //点击覆盖层效果，默认为抖动 'shake'，可选关闭 'close'
-    'overlayColor': '#000', //覆盖层颜色，默认为黑色 #000
-    'overlayOpacity': .6, //覆盖层透明度，默认为 .6
-    'allowPromptBlank': false, //允许prompt时输入内容为空，默认否，即为空时提交会抖动
-    'displayClose': false, //在alert,confirm和prompt模式中显示关闭按钮
-    'enableKeyPress': true //使用快捷键确定和取消
-})
+    var box = new BlackBox({
+        'clickOverlayEffect': 'shake', //点击覆盖层效果，默认为抖动 'shake'，可选关闭 'close'
+        'overlayColor': '#000', //覆盖层颜色，默认为黑色 #000
+        'overlayOpacity': .6, //覆盖层透明度，默认为 .6
+        'allowPromptBlank': false, //允许prompt时输入内容为空，默认否，即为空时提交会抖动
+        'displayClose': false, //在alert,confirm和prompt模式中显示关闭按钮
+        'enableKeyPress': true //使用快捷键确定和取消
+    })
         </code></pre>
 
     </div>

@@ -1,5 +1,5 @@
 html {
-    background: url(about:black) no-repeat fixed;
+    _background: url(about:black) no-repeat fixed;
 }
 
 #BlackBox {
@@ -43,7 +43,7 @@ html {
 }
 
 #BlackBox p.title {
-    _width: 390px;
+    *width: 390px;
     margin: 0;
     padding: 5px 0 5px 10px;
     font-size: 13px;
@@ -57,7 +57,7 @@ html {
     padding: 20px 20px 50px;
 }
 
-.BlackBoxContent .Inner, .BlackBoxContent .normal {
+.BlackBoxContent .Inner {
     background: #f9f9f9;
     -webkit-border-radius: 2px;
     -moz-border-radius: 2px;
@@ -73,13 +73,23 @@ html {
 .BlackBoxContent .close {
     position: absolute;
     right: 8px;
-    bottom: -35px;
+    top: 5px;
     cursor: pointer;
-    background: url("../images/close.png") no-repeat;
+    background: rgba(150,20,0,.6);
+    *background: red;
+    opacity: .8;
     float: left;
-    text-indent: -9999px;
-    width: 27px;
-    height: 27px;
+    line-height: 16px;
+    color: #ffffff;
+    width: 24px;
+    height: 18px;
+    border: 1px solid #555555;
+    text-align: center;
+}
+
+.BlackBoxContent .close:hover {
+    background: rgba(150,20,0,.5);
+    *background: darkred;
 }
 
 #BlackBoxAction {

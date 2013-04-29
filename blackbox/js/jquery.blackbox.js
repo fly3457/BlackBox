@@ -1,6 +1,6 @@
 /*
  * BlackBox - jQuery Plugin
- * version: 1.0 (11/03/2013)
+ * version: 1.2 (29/04/2013)
  * @requires jQuery v1.4 or later
  *
  *
@@ -47,7 +47,7 @@
             'overlayColor': '#000',
             'overlayOpacity': .6,
             'allowPromptBlank': false,
-            'displayClose': false,
+            'displayClose': true,
             'enableKeyPress': true
         };
 
@@ -165,7 +165,7 @@
         $BlackBox.append('<div class = "system Inner" id="alert' + _getNowID.call(this) + '"><p>' + args[0] + '</p></div>');
         _boxWrap.call(this, $("#alert" + _getNowID.call(this)), args[2]);
         _setOverlayAttr.call(this);
-        if (this.config.displayClose) {
+        if (this.config.displayClose && args[2].title) {
             _setClose.call(this, args[1]);
         }
         _setButton.call(this, args[1], null, args[2]);
@@ -192,7 +192,7 @@
             onCancel = function () {
                 return args[1].call(this, false);
             };
-        if (this.config.displayClose) {
+        if (this.config.displayClose && args[2].title) {
             _setClose.call(this, onCancel);
         }
         _setButton.call(this, onSubmit, onCancel, args[2]);
@@ -228,7 +228,7 @@
         $thisInput.blur(function () {
             $(this).val($.trim($(this).val()));
         });
-        if (this.config.displayClose) {
+        if (this.config.displayClose && args[2].title) {
             _setClose.call(this, onCancel);
         }
         args[2].verify = function () {
@@ -248,7 +248,7 @@
      * @param _delay_appear
      * @param callback
      */
-    BlackBox.fn.popup = function (html, callback,_delay_appear) {
+    BlackBox.fn.popup = function (html, callback, _delay_appear) {
         if (arguments.length === 0) return;
         callback = callback || $.noop;
         if (arguments.length === 1) {
@@ -259,7 +259,7 @@
         $BlackBox.append('<div class="normal" id="popup' + _getNowID.call(this) + '">' + html + '</div>');
         _boxWrap.call(this, $("#popup" + _getNowID.call(this)), {});
         _setOverlayAttr.call(this);
-        callback.call(this,$BlackBox);
+        callback.call(this, $BlackBox);
     };
 
     /**
@@ -328,7 +328,7 @@
      * @private
      */
     var _boxWrap = function ($target, options) {
-        $target.wrap('<div class="BlackBoxContent" id="' + _getNowID.call(this) + '"></div>');
+        $target.wrap('<div class="BlackBoxContent" draggable="true" id="' + _getNowID.call(this) + '"></div>');
         var $BlackBoxContent = $("#" + _getNowID.call(this)).fadeTo(0, 0).fadeTo(400, 1),
             box_width = $BlackBoxContent.width(),
             box_height = $BlackBoxContent.height(),
@@ -340,6 +340,32 @@
             };
         if (options.title) {
             $BlackBoxContent.prepend('<p class="title">' + options.title + '</p>');
+            var element = $BlackBoxContent, title = $BlackBoxContent.find('.title'), elementX,
+                elementY, pointX, pointY, currLeft , currTop,
+                preventDefault = function(e){
+                    e.stopPropagation();
+                    e.preventDefault();
+                },
+                mouseDown = function (e) {
+                    $(document).bind('mousemove', mouseMove);
+                    $(document).bind('mouseup', mouseUp);
+                    elementX = currLeft = parseFloat(element.css('left'));
+                    elementY = currTop = parseFloat(element.css('top'));
+                    pointX = e.pageX;
+                    pointY = e.pageY;
+                    preventDefault(e);
+                }, mouseMove = function (e) {
+                    currLeft = elementX + e.pageX - pointX;
+                    currTop = elementY + e.pageY - pointY;
+                    element.css('left', currLeft);
+                    element.css('top', currTop);
+                    preventDefault(e);
+                }, mouseUp = function (e) {
+                    $(document).unbind('mousemove', mouseMove);
+                    $(document).unbind('mouseup', mouseUp);
+                    preventDefault(e);
+                };
+            title.bind('mousedown', mouseDown);
         }
         $W.resize(resize);
         resize.call(this);
@@ -500,7 +526,7 @@
     var _setClose = function (onCancel) {
         var $BlackBoxContent = $("#" + _getNowID.call(this)),
             _this = this;
-        $BlackBoxContent.append('<div class="close">Close</div>');
+        $BlackBoxContent.append('<div class="close">x</div>');
         $BlackBoxContent.find(".close").click(function () {
             _this.boxClose.call(_this, onCancel);
         })
