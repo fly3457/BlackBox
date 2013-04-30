@@ -29,11 +29,11 @@ html {
 .BlackBoxContent {
     z-index: 8050;
     background-color: rgba(0, 0, 0, 0.4);
-    background: #666666\9;
+    background: none\9;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#4D000000,endColorstr=#4D000000)\9;
     position: absolute;
     -webkit-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
-    -moz-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+    -moz-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
     -webkit-border-radius: 2px;
     -moz-border-radius: 2px;
     border-radius: 2px;
@@ -76,10 +76,10 @@ html {
     top: 5px;
     cursor: pointer;
     background: rgba(150,20,0,.6);
-    *background: red;
+    background: darkred\9;
     opacity: .8;
     float: left;
-    line-height: 16px;
+    line-height: 17px;
     color: #ffffff;
     width: 24px;
     height: 18px;
@@ -89,7 +89,7 @@ html {
 
 .BlackBoxContent .close:hover {
     background: rgba(150,20,0,.5);
-    *background: darkred;
+    background: darkred\9;
 }
 
 #BlackBoxAction {
