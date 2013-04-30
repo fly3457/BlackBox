@@ -66,14 +66,16 @@
             },
 
             popup_preview: function () {
-                var $content = box.popup('<div class="popup_demo">' +
-                    '<button id="shake_demo">抖一抖</button><button id="close_demo">关闭</button></div>');
-                $content.find("#shake_demo").click(function () {
-                    box.boxShake();
-                });
-                $content.find("#close_demo").click(function () {
-                    box.boxClose();
-                });
+                box.popup('<div class="popup_demo">' +
+                    '<button id="shake_demo">抖一抖</button><button id="close_demo">关闭</button></div>',
+                    function (content) {
+                        content.find("#shake_demo").click(function () {
+                            box.boxShake();
+                        });
+                        content.find("#close_demo").click(function () {
+                            box.boxClose();
+                        });
+                    });
             },
 
             list_preview: function () {
@@ -96,7 +98,12 @@
 
     $(document).ready(function () {
 
-        hljs.initHighlightingOnLoad();
+        try{
+            hljs.initHighlightingOnLoad();
+
+        }catch(e) {
+            
+        }
 
         box.alert("Hello World - BlackBox ~", {
             title: '开始探索',
