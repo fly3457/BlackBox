@@ -208,7 +208,7 @@
     BlackBox.fn.prompt = function (text, callback, options, _delay_appear) {
         if (arguments.length === 0) return;
         var args = _getArgs.apply(this, arguments);
-        if (!_setOverlay.call(this, 'prompt', arguments, args[3]) && !args[3]) return;
+        if (!_setOverlay.call(this, 'prompt', args, args[3]) && !args[3]) return;
         var verify = args[2].verify ||
             function () {
                 return true;
