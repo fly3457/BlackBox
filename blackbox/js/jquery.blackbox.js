@@ -283,6 +283,7 @@
     BlackBox.fn.boxShake = function () {
         var $BlackBoxContent = $("#" + _getNowID.call(this));
         if (!$BlackBoxContent[0]) return;
+        $BlackBoxContent.stop(true);
         var box_left = $BlackBoxContent.offset().left;
         for (var i = 1; 4 >= i; i++) {
             $BlackBoxContent.animate({
@@ -526,7 +527,7 @@
     var _setClose = function (onCancel) {
         var $BlackBoxContent = $("#" + _getNowID.call(this)),
             _this = this;
-        $BlackBoxContent.append('<div class="close">x</div>');
+        $BlackBoxContent.append('<div class="close">&times;</div>');
         $BlackBoxContent.find(".close").click(function () {
             _this.boxClose.call(_this, onCancel);
         })
