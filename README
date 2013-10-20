@@ -1,5 +1,3 @@
-BlackBox 是一款基于 jQuery 的 dialog 插件。其中自带的方法有 alert , confirm , prompt , load 和 ready ,以及易于扩展的 popUp , boxClose 和 boxShake 方法。
+该项目已经停止维护,您可以使用我们的替代项目获取更好体验.
 
-项目代码托管在 Github ,兼容主流浏览器包括火狐、谷歌浏览器、Safari、Opera、 IE6+。同时模拟了浏览器原生 dialog 的多数功能 - dialog 间的阻塞、键盘快捷键等等。
-
-项目文档： http://project.vincenting.com/blackbox/
+https://github.com/HaiyiYun/VintDialog
